@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StreamLogic</title>
     <link rel="icon" href="https://cdn.discordapp.com/attachments/1206645471976886352/1497258754616328333/IMG-20260423-WA0033.jpg?ex=69ecde60&is=69eb8ce0&hm=da87ac5c46e838744073912f4059500696920b76c8f3c5f24c9f4e7ff2774028" type="image/jpeg">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at 50% 0%, #1a1600 0%, #050505 100%);
+            background: #0a0a0f;
             overflow: hidden;
             height: 100vh;
             width: 100vw;
@@ -20,192 +19,142 @@
         .stream-header {
             position: fixed;
             top: 0; left: 0; right: 0;
-            height: 60px;
-            background: rgba(10, 10, 12, 0.55);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border-bottom: 1px solid rgba(245, 197, 24, 0.15);
+            height: 52px;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            border-bottom: 1px solid rgba(245,197,24,0.3);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 24px;
+            padding: 0 20px;
             z-index: 10000;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            transition: all 0.4s ease;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 40px rgba(245,197,24,0.08);
         }
-
         .stream-header::after {
             content: '';
             position: absolute;
-            bottom: -1px; left: 0; right: 0;
+            bottom: 0; left: 0; right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(245, 197, 24, 0.8), transparent);
-            box-shadow: 0 0 15px rgba(245, 197, 24, 0.6);
+            background: linear-gradient(90deg, transparent, rgba(245,197,24,0.5), rgba(184,134,11,0.5), transparent);
         }
-
-        .header-left { display: flex; align-items: center; gap: 14px; }
-        
+        .header-left { display: flex; align-items: center; gap: 12px; }
         .header-logo {
-            width: 38px; height: 38px;
-            border-radius: 12px; object-fit: cover;
-            border: 2px solid rgba(245, 197, 24, 0.5);
-            box-shadow: 0 0 15px rgba(245, 197, 24, 0.3);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 34px; height: 34px;
+            border-radius: 10px; object-fit: cover;
+            border: 2px solid rgba(245,197,24,0.4);
+            box-shadow: 0 0 12px rgba(245,197,24,0.2);
+            transition: all 0.3s ease;
         }
-        
         .header-logo:hover {
-            border-color: rgba(245, 197, 24, 1);
-            box-shadow: 0 0 25px rgba(245, 197, 24, 0.6);
-            transform: scale(1.1) rotate(5deg);
+            border-color: rgba(245,197,24,0.8);
+            box-shadow: 0 0 20px rgba(245,197,24,0.4);
+            transform: scale(1.05);
         }
-
         .header-title {
-            font-size: 22px; font-weight: 800;
-            background: linear-gradient(135deg, #fff 0%, #f5c518 50%, #d4a017 100%);
+            font-size: 20px; font-weight: 700;
+            background: linear-gradient(135deg, #fff5cc 0%, #f5c518 50%, #d4a017 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: 1.5px; text-transform: uppercase;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            letter-spacing: 1px; text-transform: uppercase;
         }
-
-        .header-right { display: flex; align-items: center; gap: 12px; }
-        
+        .header-right { display: flex; align-items: center; gap: 10px; }
         .btn-action {
             display: flex; align-items: center; gap: 8px;
-            padding: 8px 18px;
-            background: rgba(245, 197, 24, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(245, 197, 24, 0.3);
-            border-radius: 14px;
+            padding: 7px 16px;
+            background: linear-gradient(135deg, rgba(245,197,24,0.15), rgba(184,134,11,0.2));
+            border: 1px solid rgba(245,197,24,0.35);
+            border-radius: 10px;
             color: #fce883;
             font-family: 'Inter', sans-serif;
-            font-size: 14px; font-weight: 600;
+            font-size: 13px; font-weight: 600;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s ease;
             letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            user-select: none;
         }
-
         .btn-action:hover {
-            background: rgba(245, 197, 24, 0.25);
-            border-color: rgba(245, 197, 24, 0.8);
-            color: #fff;
-            box-shadow: 0 10px 25px rgba(245, 197, 24, 0.25);
-            transform: translateY(-3px) scale(1.05);
+            background: linear-gradient(135deg, rgba(245,197,24,0.3), rgba(184,134,11,0.35));
+            border-color: rgba(245,197,24,0.6);
+            color: #fff8cc;
+            box-shadow: 0 0 20px rgba(245,197,24,0.2);
+            transform: translateY(-1px);
         }
-
-        .btn-action:active { transform: translateY(0) scale(0.95); }
-        .btn-action svg { transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .btn-action:hover svg { transform: rotate(180deg) scale(1.1); }
-        .btn-action.spinning svg { animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
-        
+        .btn-action:active { transform: translateY(0); }
+        .btn-action svg { transition: transform 0.4s ease; }
+        .btn-action:hover svg { transform: rotate(180deg); }
+        .btn-action.spinning svg { animation: spin 0.7s linear infinite; }
+        .btn-home {
+            background: linear-gradient(135deg, rgba(184,134,11,0.15), rgba(245,197,24,0.1));
+            border-color: rgba(245,197,24,0.25);
+        }
+        .btn-home:hover {
+            background: linear-gradient(135deg, rgba(184,134,11,0.3), rgba(245,197,24,0.2));
+        }
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 
         #iframeContainer {
             position: fixed;
-            top: 60px; left: 0; right: 0; bottom: 0;
+            top: 52px; left: 0; right: 0; bottom: 0;
             overflow: hidden;
-            background: transparent;
+            background: #0d0d17;
         }
         #iframeContainer iframe {
             width: 100%; height: 100%; border: none;
         }
 
-        /* 3D Loading Overlay */
         .loading-overlay {
             position: fixed;
-            top: 60px; left: 0; right: 0; bottom: 0;
-            background: rgba(5, 5, 5, 0.8);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            top: 52px; left: 0; right: 0; bottom: 0;
+            background: #0d0d17;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             z-index: 9999;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 0.35s ease, visibility 0.35s ease;
         }
         .loading-overlay.hidden {
             opacity: 0; visibility: hidden; pointer-events: none;
-            transform: scale(1.05);
         }
-        
-        .loading-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(245, 197, 24, 0.2);
-            padding: 40px 60px;
-            border-radius: 30px;
-            display: flex; flex-direction: column; align-items: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-            animation: float 4s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-
         .loading-ring {
-            width: 60px; height: 60px;
-            border: 4px solid rgba(245, 197, 24, 0.1);
-            border-top-color: #f5c518;
+            width: 44px; height: 44px;
+            border: 3px solid rgba(245,197,24,0.12);
+            border-top-color: rgba(245,197,24,0.75);
             border-radius: 50%;
-            animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-            margin-bottom: 24px;
-            box-shadow: 0 0 20px rgba(245, 197, 24, 0.4);
+            animation: spin 0.9s linear infinite;
+            margin-bottom: 18px;
         }
-        
         .loading-text {
-            color: #fff;
-            font-size: 15px; font-weight: 600;
-            letter-spacing: 2px; text-transform: uppercase;
-            text-shadow: 0 2px 10px rgba(245, 197, 24, 0.5);
-            animation: pulse 2s ease-in-out infinite;
+            color: rgba(245,230,150,0.65);
+            font-size: 13px; font-weight: 500;
+            letter-spacing: 1.5px; text-transform: uppercase;
         }
 
-        @keyframes pulse {
-            0% { opacity: 0.6; }
-            50% { opacity: 1; }
-            100% { opacity: 0.6; }
-        }
-
-        /* 3D Error Overlay */
         .error-overlay {
             position: fixed;
-            top: 60px; left: 0; right: 0; bottom: 0;
-            background: rgba(5, 5, 5, 0.8);
-            backdrop-filter: blur(30px);
+            top: 52px; left: 0; right: 0; bottom: 0;
+            background: #0d0d17;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             z-index: 9998;
             opacity: 0; visibility: hidden; pointer-events: none;
-            transition: all 0.4s ease;
-            transform: scale(0.95);
+            transition: opacity 0.3s ease, visibility 0.3s ease;
         }
         .error-overlay.visible {
             opacity: 1; visibility: visible; pointer-events: auto;
-            transform: scale(1);
         }
-        .error-card {
-            background: rgba(255, 0, 0, 0.05);
-            border: 1px solid rgba(255, 50, 50, 0.3);
-            padding: 40px 60px;
-            border-radius: 30px;
-            display: flex; flex-direction: column; align-items: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px rgba(255, 50, 50, 0.1);
-        }
-        .error-icon { font-size: 54px; margin-bottom: 16px; filter: drop-shadow(0 0 10px rgba(255,0,0,0.5)); }
+        .error-icon { font-size: 48px; margin-bottom: 16px; }
         .error-msg {
-            color: #ffb3b3; font-size: 16px; font-weight: 500; margin-bottom: 24px;
+            color: rgba(245,230,150,0.7);
+            font-size: 15px; margin-bottom: 20px;
         }
 
         @media (max-width: 520px) {
-            .stream-header { height: 54px; padding: 0 16px; }
-            .header-logo { width: 32px; height: 32px; }
-            .header-title { font-size: 18px; }
-            .btn-action { padding: 6px 12px; font-size: 13px; border-radius: 10px; }
+            .stream-header { height: 46px; padding: 0 12px; }
+            .header-logo { width: 28px; height: 28px; }
+            .header-title { font-size: 16px; }
+            .btn-action { padding: 5px 10px; font-size: 12px; }
             .btn-action .btn-label { display: none; }
-            #iframeContainer, .loading-overlay, .error-overlay { top: 54px; }
+            #iframeContainer { top: 46px; }
+            .loading-overlay { top: 46px; }
+            .error-overlay { top: 46px; }
         }
     </style>
 </head>
@@ -219,14 +168,14 @@
         </div>
         <div class="header-right">
             <button class="btn-action btn-home" id="btnHome" title="Inicio">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                     <polyline points="9 22 9 12 15 12 15 22"></polyline>
                 </svg>
                 <span class="btn-label">Inicio</span>
             </button>
             <button class="btn-action" id="btnReload" title="Recargar">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="23 4 23 10 17 10"></polyline>
                     <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
                 </svg>
@@ -236,24 +185,20 @@
     </header>
 
     <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-card">
-            <div class="loading-ring"></div>
-            <div class="loading-text">Cargando</div>
-        </div>
+        <div class="loading-ring"></div>
+        <div class="loading-text">Conectando con la API | V1.0</div>
     </div>
 
     <div class="error-overlay" id="errorOverlay">
-        <div class="error-card">
-            <div class="error-icon">⚠️</div>
-            <div class="error-msg">No se pudo cargar el contenido</div>
-            <button class="btn-action" id="btnRetry">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="23 4 23 10 17 10"></polyline>
-                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                </svg>
-                <span>Reintentar</span>
-            </button>
-        </div>
+        <div class="error-icon">⚠️</div>
+        <div class="error-msg">No se pudo cargar el contenido | Código de error: 404</div>
+        <button class="btn-action" id="btnRetry">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+            <span>Reintentar</span>
+        </button>
     </div>
 
     <div id="iframeContainer"></div>
@@ -281,115 +226,20 @@
         function hideLoad() { loading.classList.add('hidden'); }
         function showError(){ loading.classList.add('hidden'); errorDiv.classList.add('visible'); }
 
+        
         var INJECT_CSS = [
-            'header, .navbar, nav.navbar, .top-bar, #header, .site-header, .main-header, .navigation, .nav-main { display:none!important }',
-            '.app-banner, .app-download, .app-promo, .download-app, .box_app, .box-app, [class*="app-banner"], [class*="app-download"], #app-banner { display:none!important }',
-            '.mobile-bottom-nav__item[href*="comunidad"], a[href*="comunidad"], .fullmenu.mobile-bottom-nav__item, .mobile-bottom-nav__item--mas { display:none!important }',
-            'li:has(>a[href*="comunidad"]) { display:none!important }',
-            'body { padding-top:0!important; margin-top:0!important }',
-            '.content-wrapper, .main-content, #content { margin-top:0!important; padding-top:0!important }',
-            
-            /* Custom Scrollbar */
-            '::-webkit-scrollbar { width: 12px !important; background: #050505 !important; }',
-            '::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #d4a017, #f5c518) !important; border-radius: 10px !important; border: 3px solid #050505 !important; }',
-            
-            /* Global Background iOS 26 Glassmorphism */
-            'body, html, .anime__page, .bg-dark, .theme-dark, #content, .content-wrapper, main {',
-            '    background: radial-gradient(circle at 50% 0%, #1a1600 0%, #08080a 60%, #050505 100%) !important;',
-            '    background-attachment: fixed !important;',
-            '    color: #e0e0e0 !important;',
-            '}',
-            
-            /* Glassmorphism & 3D Cards */
-            '.anime__item, .product__item, .list-group-item, .custom_item2, .hero__items, .anime__video__player {',
-            '    background: rgba(20, 20, 20, 0.5) !important;',
-            '    backdrop-filter: blur(20px) !important;',
-            '    -webkit-backdrop-filter: blur(20px) !important;',
-            '    border: 1px solid rgba(245, 197, 24, 0.15) !important;',
-            '    border-radius: 24px !important;',
-            '    overflow: hidden !important;',
-            '    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;',
-            '    transform-style: preserve-3d !important;',
-            '    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;',
-            '    margin-bottom: 24px !important;',
-            '}',
-            
-            '.anime__item:hover, .product__item:hover, .list-group-item:hover, .custom_item2:hover {',
-            '    transform: translateY(-12px) scale(1.03) !important;',
-            '    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(245, 197, 24, 0.15) !important;',
-            '    border-color: rgba(245, 197, 24, 0.6) !important;',
-            '    z-index: 10 !important;',
-            '}',
-            
-            /* Fix Images */
-            '.anime__item__pic, .product__item__pic, img.set-bg {',
-            '    border-radius: 24px 24px 0 0 !important;',
-            '    transition: transform 0.6s ease !important;',
-            '}',
-            '.anime__item:hover .anime__item__pic, .product__item:hover .product__item__pic {',
-            '    transform: scale(1.08) !important;',
-            '}',
-            
-            /* Titles and Text */
-            '.anime__item__text h5 a, .product__item__text h5 a, h3, h4, h5, h6 {',
-            '    color: #fff !important;',
-            '    text-shadow: 0 2px 4px rgba(0,0,0,0.5) !important;',
-            '    transition: color 0.3s ease !important;',
-            '}',
-            '.anime__item__text h5 a:hover, .product__item__text h5 a:hover {',
-            '    color: #f5c518 !important;',
-            '}',
-            
-            /* Buttons and Badges */
-            '.ep, .view, .btn-primary, .follow-btn, .anime__details__btn a, .btn {',
-            '    background: linear-gradient(135deg, #f5c518 0%, #d4a017 100%) !important;',
-            '    color: #000 !important;',
-            '    border-radius: 14px !important;',
-            '    font-weight: 700 !important;',
-            '    border: none !important;',
-            '    box-shadow: 0 4px 15px rgba(245, 197, 24, 0.3) !important;',
-            '    text-transform: uppercase !important;',
-            '    letter-spacing: 1px !important;',
-            '    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;',
-            '}',
-            '.ep:hover, .view:hover, .btn-primary:hover, .follow-btn:hover, .anime__details__btn a:hover, .btn:hover {',
-            '    transform: translateY(-4px) scale(1.05) !important;',
-            '    box-shadow: 0 10px 25px rgba(245, 197, 24, 0.5) !important;',
-            '}',
-            
-            /* Search bar / Inputs */
-            'input[type="text"], input[type="search"], select {',
-            '    background: rgba(15, 15, 15, 0.6) !important;',
-            '    border: 1px solid rgba(245, 197, 24, 0.3) !important;',
-            '    border-radius: 16px !important;',
-            '    color: #fff !important;',
-            '    padding: 12px 24px !important;',
-            '    backdrop-filter: blur(10px) !important;',
-            '    transition: all 0.4s ease !important;',
-            '    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5) !important;',
-            '}',
-            'input[type="text"]:focus, input[type="search"]:focus {',
-            '    border-color: #f5c518 !important;',
-            '    box-shadow: 0 0 20px rgba(245, 197, 24, 0.4), inset 0 2px 5px rgba(0,0,0,0.5) !important;',
-            '    outline: none !important;',
-            '}',
-
-            /* Additional adjustments for JKAnime inner components */
-            '.hero__slider .owl-nav button {',
-            '    background: rgba(245,197,24,0.2) !important;',
-            '    backdrop-filter: blur(10px) !important;',
-            '    border-radius: 50% !important;',
-            '    border: 1px solid rgba(245,197,24,0.5) !important;',
-            '    transition: all 0.3s ease !important;',
-            '}',
-            '.hero__slider .owl-nav button:hover {',
-            '    background: rgba(245,197,24,0.8) !important;',
-            '    transform: scale(1.1) !important;',
-            '}'
+            'header,.navbar,nav.navbar,.top-bar,#header,.site-header,.main-header,.navigation,.nav-main{display:none!important}',
+            '.app-banner,.app-download,.app-promo,.download-app,.box_app,.box-app,[class*="app-banner"],[class*="app-download"],#app-banner{display:none!important}',
+            '.mobile-bottom-nav__item[href*="comunidad"],a[href*="comunidad"],.fullmenu.mobile-bottom-nav__item,.mobile-bottom-nav__item--mas{display:none!important}',
+            'li:has(>a[href*="comunidad"]){display:none!important}',
+            'body{padding-top:0!important;margin-top:0!important}',
+            '.content-wrapper,.main-content,#content{margin-top:0!important;padding-top:0!important}'
         ].join('\n');
 
+        
         function buildInjectJS() {
             return '(function(){\n' +
+            
             'var _origFetch=window.fetch;\n' +
             'window.fetch=function(url,opts){\n' +
             '  if(typeof url==="string"){\n' +
@@ -414,10 +264,14 @@
             '  }\n' +
             '  return _origOpen.apply(this,arguments);\n' +
             '};\n' +
+
+            
             'document.cookie="darkmode=true;path=/;max-age=31536000";\n' +
             'document.documentElement.classList.add("dark-mode");\n' +
             'if(document.body) document.body.classList.add("dark-mode");\n' +
             'document.title="StreamLogic";\n' +
+
+            
             'function cleanup(){\n' +
             '  document.querySelectorAll("header,.navbar,nav.navbar,.top-bar,.site-header,.main-header,#header,.navigation,.nav-main").forEach(function(e){e.style.display="none"});\n' +
             '  document.querySelectorAll("a").forEach(function(a){\n' +
@@ -442,6 +296,8 @@
             'setTimeout(cleanup,800);\n' +
             'setTimeout(cleanup,2000);\n' +
             'if(document.body){new MutationObserver(function(){cleanup()}).observe(document.body,{childList:true,subtree:true})}\n' +
+
+            
             'document.addEventListener("click",function(e){\n' +
             '  var a=e.target.closest("a");\n' +
             '  if(!a)return;\n' +
@@ -453,6 +309,8 @@
             '  e.preventDefault();e.stopPropagation();\n' +
             '  window.parent.postMessage({type:"sl-nav",url:resolved},"*");\n' +
             '},true);\n' +
+
+            
             'document.addEventListener("submit",function(e){\n' +
             '  var form=e.target;\n' +
             '  var action=form.getAttribute("action")||"";\n' +
@@ -465,9 +323,11 @@
             '  var navUrl=resolved+(resolved.indexOf("?")===-1?"?":"&")+params;\n' +
             '  window.parent.postMessage({type:"sl-nav",url:navUrl},"*");\n' +
             '},true);\n' +
+
             '})();\n';
         }
 
+        
         window.addEventListener('message', function(e) {
             if (e.data && e.data.type === 'sl-nav' && e.data.url) {
                 currentUrl = e.data.url;
@@ -475,6 +335,7 @@
             }
         });
 
+        
         function loadPage(url) {
             currentUrl = url;
             showLoad();
@@ -487,7 +348,7 @@
 
             var proxyUrl = PROXIES[idx](url);
             var ctrl = new AbortController();
-            var timer = setTimeout(function(){ ctrl.abort(); }, 12000);
+            var timer = setTimeout(function(){ ctrl.abort(); }, 10000);
 
             fetch(proxyUrl, { signal: ctrl.signal })
                 .then(function(r) {
@@ -507,12 +368,14 @@
                 });
         }
 
+        
         function renderPage(html, pageUrl) {
             var baseTag = '<base href="' + JKBASE + '/" target="_self">';
             var earlyJS = '<script>' + buildInjectJS() + '<\/script>';
             var customCSS = '<style id="sl-css">' + INJECT_CSS + '</style>';
             var darkInit = '<script>document.cookie="darkmode=true;path=/;max-age=31536000";document.documentElement.classList.add("dark-mode");<\/script>';
 
+            
             var headRe = /<head[^>]*>/i;
             var headMatch = html.match(headRe);
             if (headMatch) {
@@ -521,14 +384,18 @@
                 html = '<head>' + baseTag + darkInit + earlyJS + '</head>' + html;
             }
 
+            
             html = html.replace(/<\/head>/i, customCSS + '</head>');
+
+            
             html = html.replace(/<title>[^<]*<\/title>/i, '<title>StreamLogic</title>');
 
+            
             container.innerHTML = '';
             var iframe = document.createElement('iframe');
             iframe.id = 'jkFrame';
             iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
-            iframe.style.cssText = 'width:100%;height:100%;border:none;background:transparent;';
+            iframe.style.cssText = 'width:100%;height:100%;border:none';
             container.appendChild(iframe);
 
             var doc = iframe.contentDocument || iframe.contentWindow.document;
@@ -537,9 +404,10 @@
             doc.close();
         }
 
+        
         btnReload.addEventListener('click', function() {
             btnReload.classList.add('spinning');
-            setTimeout(function(){ btnReload.classList.remove('spinning'); }, 800);
+            setTimeout(function(){ btnReload.classList.remove('spinning'); }, 700);
             loadPage(currentUrl);
         });
 
@@ -558,9 +426,9 @@
             }
         });
 
+        
         loadPage(JKURL);
     })();
     </script>
 </body>
 </html>
-
