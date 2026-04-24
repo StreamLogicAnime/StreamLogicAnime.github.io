@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamLogic</title>
+    <link rel="icon" href="https://cdn.discordapp.com/attachments/1206645471976886352/1497258754616328333/IMG-20260423-WA0033.jpg?ex=69ecde60&is=69eb8ce0&hm=da87ac5c46e838744073912f4059500696920b76c8f3c5f24c9f4e7ff2774028" type="image/jpeg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* ═══════════════════════════════════════════ */
+        /*  CUSTOM HEADER BAR                          */
+        /* ═══════════════════════════════════════════ */
+        .stream-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 10000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 40px rgba(138, 43, 226, 0.08);
+        }
+
+        .stream-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(138, 43, 226, 0.5), rgba(75, 0, 130, 0.5), transparent);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 2px solid rgba(138, 43, 226, 0.4);
+            box-shadow: 0 0 12px rgba(138, 43, 226, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .header-logo:hover {
+            border-color: rgba(138, 43, 226, 0.8);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.4);
+            transform: scale(1.05);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #e0e0ff 0%, #b388ff 50%, #7c4dff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-reload {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(75, 0, 130, 0.2));
+            border: 1px solid rgba(138, 43, 226, 0.35);
+            border-radius: 10px;
+            color: #c9b0ff;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-reload:hover {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(75, 0, 130, 0.35));
+            border-color: rgba(138, 43, 226, 0.6);
+            color: #e0d0ff;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-reload:active {
+            transform: translateY(0);
+        }
+
+        .btn-reload svg {
+            transition: transform 0.5s ease;
+        }
+
+        .btn-reload:hover svg {
+            transform: rotate(180deg);
+        }
+
+        .btn-reload.reloading svg {
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ═══════════════════════════════════════════ */
+        /*  IFRAME CONTAINER                           */
+        /* ═══════════════════════════════════════════ */
+        .iframe-container {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0a0a0f;
+        }
+
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* ═══════════════════════════════════════════ */
+        /*  LOADING OVERLAY                            */
+        /* ═══════════════════════════════════════════ */
+        .loading-overlay {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0a0a0f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(138, 43, 226, 0.15);
+            border-top: 3px solid rgba(138, 43, 226, 0.8);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .loading-text {
+            color: rgba(200, 180, 255, 0.7);
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        /* ═══════════════════════════════════════════ */
+        /*  ERROR OVERLAY                              */
+        /* ═══════════════════════════════════════════ */
+        .error-overlay {
+            position: fixed;
+            top: 56px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0a0a0f;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .error-overlay.visible {
+            display: flex;
+        }
+
+        .error-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .error-title {
+            color: #e0d0ff;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .error-desc {
+            color: rgba(200, 180, 255, 0.6);
+            font-size: 14px;
+            max-width: 400px;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .btn-retry {
+            padding: 10px 28px;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(75, 0, 130, 0.3));
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            border-radius: 10px;
+            color: #c9b0ff;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-retry:hover {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.35), rgba(75, 0, 130, 0.45));
+            border-color: rgba(138, 43, 226, 0.7);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+        }
+
+        /* ═══════════════════════════════════════════ */
+        /*  RESPONSIVE                                 */
+        /* ═══════════════════════════════════════════ */
+        @media (max-width: 480px) {
+            .stream-header {
+                height: 48px;
+                padding: 0 12px;
+            }
+
+            .header-logo {
+                width: 30px;
+                height: 30px;
+            }
+
+            .header-title {
+                font-size: 16px;
+            }
+
+            .btn-reload {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .btn-reload span {
+                display: none;
+            }
+
+            .iframe-container {
+                top: 48px;
+            }
+
+            .loading-overlay {
+                top: 48px;
+            }
+
+            .error-overlay {
+                top: 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ═══════════════ HEADER ═══════════════ -->
+    <header class="stream-header" id="streamHeader">
+        <div class="header-left">
+            <img 
+                class="header-logo" 
+                src="https://cdn.discordapp.com/attachments/1206645471976886352/1497258754616328333/IMG-20260423-WA0033.jpg?ex=69ecde60&is=69eb8ce0&hm=da87ac5c46e838744073912f4059500696920b76c8f3c5f24c9f4e7ff2774028" 
+                alt="StreamLogic Logo"
+                onerror="this.style.display='none'"
+            >
+            <span class="header-title">StreamLogic</span>
+        </div>
+        <div class="header-right">
+            <button class="btn-reload" id="btnReload" title="Recargar página">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+                <span>Recargar</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ═══════════════ LOADING ═══════════════ -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Cargando StreamLogic<span class="loading-dots"></span></div>
+    </div>
+
+    <!-- ═══════════════ ERROR ═══════════════ -->
+    <div class="error-overlay" id="errorOverlay">
+        <div class="error-icon">⚠️</div>
+        <div class="error-title">Error al cargar</div>
+        <div class="error-desc">No se pudo cargar el contenido. Esto puede deberse a restricciones del servidor. Intenta recargar.</div>
+        <button class="btn-retry" id="btnRetry">Reintentar</button>
+    </div>
+
+    <!-- ═══════════════ IFRAME CONTAINER ═══════════════ -->
+    <div class="iframe-container" id="iframeContainer">
+    </div>
+
+    <script>
+        (function() {
+            const JKANIME_URL = 'https://jkanime.net/';
+            const iframeContainer = document.getElementById('iframeContainer');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const errorOverlay = document.getElementById('errorOverlay');
+            const btnReload = document.getElementById('btnReload');
+            const btnRetry = document.getElementById('btnRetry');
+
+            /* ═══════════════════════════════════════════ */
+            /*  CSS TO INJECT INTO JKANIME                 */
+            /* ═══════════════════════════════════════════ */
+            const INJECT_CSS = `
+                /* Hide the JKAnime blue header/nav bar */
+                header,
+                .navbar,
+                .header,
+                nav.navbar,
+                .top-bar,
+                #header,
+                .site-header,
+                .main-header {
+                    display: none !important;
+                }
+
+                /* Hide Comunidad and Más sections in bottom nav and sidebar */
+                .mobile-bottom-nav__item[href*="comunidad"],
+                a[href*="comunidad"],
+                .fullmenu.mobile-bottom-nav__item,
+                .mobile-bottom-nav__item--mas {
+                    display: none !important;
+                }
+
+                /* Hide Comunidad and Más from any navigation menu */
+                li:has(> a[href*="comunidad"]),
+                li:has(> a:contains("Comunidad")),
+                li:has(> a:contains("Más")) {
+                    display: none !important;
+                }
+
+                /* Adjust body to remove header gap */
+                body {
+                    padding-top: 0 !important;
+                    margin-top: 0 !important;
+                }
+
+                /* Fix any content offset that was accounting for the original header */
+                .content-wrapper,
+                .main-content,
+                #content {
+                    margin-top: 0 !important;
+                    padding-top: 0 !important;
+                }
+            `;
+
+            /* ═══════════════════════════════════════════ */
+            /*  JS TO INJECT INTO JKANIME                  */
+            /* ═══════════════════════════════════════════ */
+            const INJECT_JS = `
+                (function() {
+                    // Force dark mode
+                    document.cookie = "darkmode=true; path=/; max-age=31536000";
+                    
+                    // Add dark-mode class if the site uses it
+                    document.documentElement.classList.add('dark-mode');
+                    document.body.classList.add('dark-mode');
+
+                    // Change document title
+                    document.title = 'StreamLogic';
+
+                    // Function to hide unwanted elements
+                    function hideElements() {
+                        // Hide the header/nav bar
+                        var headers = document.querySelectorAll('header, .navbar, nav.navbar, .top-bar, .site-header, .main-header, #header');
+                        headers.forEach(function(el) { el.style.display = 'none'; });
+
+                        // Hide Comunidad links
+                        var allLinks = document.querySelectorAll('a');
+                        allLinks.forEach(function(link) {
+                            var text = link.textContent.trim().toLowerCase();
+                            if (text === 'comunidad' || text === 'más' || text === 'mas') {
+                                var parent = link.closest('li') || link.closest('.mobile-bottom-nav__item') || link;
+                                parent.style.display = 'none';
+                            }
+                        });
+
+                        // Hide links by href
+                        var comunidadLinks = document.querySelectorAll('a[href*="comunidad"]');
+                        comunidadLinks.forEach(function(el) {
+                            var p = el.closest('li') || el;
+                            p.style.display = 'none';
+                        });
+
+                        // Hide the "Más" bottom nav item
+                        var masItems = document.querySelectorAll('.fullmenu.mobile-bottom-nav__item');
+                        masItems.forEach(function(el) { el.style.display = 'none'; });
+
+                        // Fix body padding
+                        document.body.style.paddingTop = '0';
+                        document.body.style.marginTop = '0';
+
+                        // Activate dark mode toggle if exists
+                        var darkToggle = document.querySelector('.switchBtn input[type="checkbox"]');
+                        if (darkToggle && !darkToggle.checked) {
+                            darkToggle.click();
+                        }
+                    }
+
+                    // Run immediately
+                    hideElements();
+
+                    // Run again after short delays for dynamically loaded content
+                    setTimeout(hideElements, 500);
+                    setTimeout(hideElements, 1500);
+                    setTimeout(hideElements, 3000);
+
+                    // Observe DOM changes to hide elements as they appear
+                    var observer = new MutationObserver(function() {
+                        hideElements();
+                    });
+                    observer.observe(document.body, { childList: true, subtree: true });
+                })();
+            `;
+
+            /* ═══════════════════════════════════════════ */
+            /*  LOAD CONTENT                               */
+            /* ═══════════════════════════════════════════ */
+            function loadContent(url) {
+                loadingOverlay.classList.remove('hidden');
+                errorOverlay.classList.remove('visible');
+                iframeContainer.innerHTML = '';
+
+                // Method 1: Try direct iframe first
+                loadViaIframe(url);
+            }
+
+            function loadViaIframe(url) {
+                var iframe = document.createElement('iframe');
+                iframe.id = 'jkanimeFrame';
+                iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation');
+                iframe.setAttribute('referrerpolicy', 'no-referrer');
+                iframe.setAttribute('loading', 'eager');
+
+                var loaded = false;
+
+                iframe.onload = function() {
+                    loaded = true;
+                    loadingOverlay.classList.add('hidden');
+
+                    // Try to inject CSS and JS into the iframe
+                    try {
+                        var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+                        // Inject CSS
+                        var style = iframeDoc.createElement('style');
+                        style.textContent = INJECT_CSS;
+                        iframeDoc.head.appendChild(style);
+
+                        // Inject JS
+                        var script = iframeDoc.createElement('script');
+                        script.textContent = INJECT_JS;
+                        iframeDoc.body.appendChild(script);
+
+                        // Change title in iframe
+                        iframeDoc.title = 'StreamLogic';
+
+                    } catch(e) {
+                        // Cross-origin - can't inject directly
+                        // The page will still load, just without modifications
+                        console.log('Cross-origin: using fallback proxy method');
+                        loadViaProxy(url);
+                        return;
+                    }
+                };
+
+                iframe.onerror = function() {
+                    if (!loaded) {
+                        loadViaProxy(url);
+                    }
+                };
+
+                // Set a timeout for fallback
+                setTimeout(function() {
+                    if (!loaded) {
+                        loadViaProxy(url);
+                    }
+                }, 8000);
+
+                iframe.src = url;
+                iframeContainer.appendChild(iframe);
+            }
+
+            function loadViaProxy(url) {
+                iframeContainer.innerHTML = '';
+                loadingOverlay.classList.remove('hidden');
+
+                var proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+
+                fetch(proxyUrl)
+                    .then(function(response) {
+                        if (!response.ok) throw new Error('Proxy error');
+                        return response.text();
+                    })
+                    .then(function(html) {
+                        // Inject our modifications into the HTML
+                        var modifiedHTML = modifyHTML(html, url);
+
+                        var iframe = document.createElement('iframe');
+                        iframe.id = 'jkanimeFrame';
+                        iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
+                        iframe.style.width = '100%';
+                        iframe.style.height = '100%';
+                        iframe.style.border = 'none';
+
+                        iframeContainer.appendChild(iframe);
+
+                        var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        iframeDoc.open();
+                        iframeDoc.write(modifiedHTML);
+                        iframeDoc.close();
+
+                        loadingOverlay.classList.add('hidden');
+                    })
+                    .catch(function(err) {
+                        console.error('Proxy failed:', err);
+                        // Show error only if direct iframe also failed
+                        if (!document.getElementById('jkanimeFrame') || 
+                            document.getElementById('jkanimeFrame').src === '') {
+                            loadingOverlay.classList.add('hidden');
+                            errorOverlay.classList.add('visible');
+                        } else {
+                            loadingOverlay.classList.add('hidden');
+                        }
+                    });
+            }
+
+            function modifyHTML(html, baseUrl) {
+                // Add base tag for relative URLs
+                var baseTag = '<base href="' + baseUrl + '" target="_self">';
+
+                // Our custom CSS injection
+                var customCSS = '<style id="streamlogic-inject">' + INJECT_CSS + '</style>';
+
+                // Our custom JS injection
+                var customJS = '<script id="streamlogic-script">' + INJECT_JS + '<\/script>';
+
+                // Dark mode cookie script (runs before page renders)
+                var darkModeScript = '<script>document.cookie="darkmode=true;path=/;max-age=31536000";<\/script>';
+
+                // Insert base tag and dark mode script right after <head>
+                if (html.indexOf('<head>') !== -1) {
+                    html = html.replace('<head>', '<head>' + baseTag + darkModeScript);
+                } else if (html.indexOf('<HEAD>') !== -1) {
+                    html = html.replace('<HEAD>', '<HEAD>' + baseTag + darkModeScript);
+                } else {
+                    html = baseTag + darkModeScript + html;
+                }
+
+                // Insert custom CSS before </head>
+                if (html.indexOf('</head>') !== -1) {
+                    html = html.replace('</head>', customCSS + '</head>');
+                } else if (html.indexOf('</HEAD>') !== -1) {
+                    html = html.replace('</HEAD>', customCSS + '</HEAD>');
+                }
+
+                // Insert custom JS before </body>
+                if (html.indexOf('</body>') !== -1) {
+                    html = html.replace('</body>', customJS + '</body>');
+                } else if (html.indexOf('</BODY>') !== -1) {
+                    html = html.replace('</BODY>', customJS + '</BODY>');
+                } else {
+                    html += customJS;
+                }
+
+                // Change title
+                html = html.replace(/<title>[^<]*<\/title>/i, '<title>StreamLogic</title>');
+
+                return html;
+            }
+
+            /* ═══════════════════════════════════════════ */
+            /*  RELOAD                                     */
+            /* ═══════════════════════════════════════════ */
+            function reloadContent() {
+                btnReload.classList.add('reloading');
+                setTimeout(function() {
+                    btnReload.classList.remove('reloading');
+                }, 800);
+
+                var existingFrame = document.getElementById('jkanimeFrame');
+                if (existingFrame) {
+                    try {
+                        existingFrame.contentWindow.location.reload();
+                        return;
+                    } catch(e) {
+                        // Cross-origin, reload by recreating
+                    }
+                }
+
+                loadContent(JKANIME_URL);
+            }
+
+            /* ═══════════════════════════════════════════ */
+            /*  EVENT LISTENERS                            */
+            /* ═══════════════════════════════════════════ */
+            btnReload.addEventListener('click', reloadContent);
+            btnRetry.addEventListener('click', function() {
+                loadContent(JKANIME_URL);
+            });
+
+            // Keyboard shortcut: F5 or Ctrl+R to reload iframe instead of page
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+                    e.preventDefault();
+                    reloadContent();
+                }
+            });
+
+            /* ═══════════════════════════════════════════ */
+            /*  INITIAL LOAD                               */
+            /* ═══════════════════════════════════════════ */
+            loadContent(JKANIME_URL);
+
+        })();
+    </script>
+</body>
+</html>
