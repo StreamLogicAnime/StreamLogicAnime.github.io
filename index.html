@@ -1,1 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamLogic</title>
+    <link rel="icon" href="https://cdn.discordapp.com/attachments/1206645471976886352/1497258754616328333/IMG-20260423-WA0033.jpg?ex=69ecde60&is=69eb8ce0&hm=da87ac5c46e838744073912f4059500696920b76c8f3c5f24c9f4e7ff2774028" type="image/jpeg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* ═══════════════════════════════════════════════ */
+        /*  STREAMLOGIC HEADER — overlays JKAnime's bar   */
+        /* ═══════════════════════════════════════════════ */
+        .stream-header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 52px;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 10000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 40px rgba(138, 43, 226, 0.08);
+        }
+
+        .stream-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(138, 43, 226, 0.5), rgba(75, 0, 130, 0.5), transparent);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 2px solid rgba(138, 43, 226, 0.4);
+            box-shadow: 0 0 12px rgba(138, 43, 226, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .header-logo:hover {
+            border-color: rgba(138, 43, 226, 0.8);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.4);
+            transform: scale(1.05);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #e0e0ff 0%, #b388ff 50%, #7c4dff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-action {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 16px;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(75, 0, 130, 0.2));
+            border: 1px solid rgba(138, 43, 226, 0.35);
+            border-radius: 10px;
+            color: #c9b0ff;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            user-select: none;
+        }
+
+        .btn-action:hover {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(75, 0, 130, 0.35));
+            border-color: rgba(138, 43, 226, 0.6);
+            color: #e0d0ff;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .btn-action:active { transform: translateY(0); }
+
+        .btn-action svg { transition: transform 0.4s ease; }
+        .btn-action:hover svg { transform: rotate(180deg); }
+        .btn-action.spinning svg { animation: spin 0.7s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .btn-home {
+            background: linear-gradient(135deg, rgba(75, 0, 130, 0.15), rgba(138, 43, 226, 0.1));
+            border-color: rgba(138, 43, 226, 0.25);
+        }
+
+        .btn-home:hover {
+            background: linear-gradient(135deg, rgba(75, 0, 130, 0.3), rgba(138, 43, 226, 0.2));
+        }
+
+        /* ═══════════════════════════════════════════════ */
+        /*  IFRAME — full page, positioned to hide the    */
+        /*  JKAnime header behind our StreamLogic header   */
+        /* ═══════════════════════════════════════════════ */
+        .iframe-wrapper {
+            position: fixed;
+            top: 52px; left: 0; right: 0; bottom: 0;
+            overflow: hidden;
+            background: #0d0d17;
+        }
+
+        .iframe-wrapper iframe {
+            width: 100%;
+            border: none;
+            /* Shift iframe up so JKAnime's ~52px header hides behind our header */
+            height: calc(100% + 52px);
+            margin-top: -52px;
+        }
+
+        /* ═══════════════════════════════════════════════ */
+        /*  LOADING OVERLAY                                */
+        /* ═══════════════════════════════════════════════ */
+        .loading-overlay {
+            position: fixed;
+            top: 52px; left: 0; right: 0; bottom: 0;
+            background: #0d0d17;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-ring {
+            width: 44px; height: 44px;
+            border: 3px solid rgba(138, 43, 226, 0.12);
+            border-top-color: rgba(138, 43, 226, 0.75);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            margin-bottom: 18px;
+        }
+
+        .loading-text {
+            color: rgba(200, 180, 255, 0.65);
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        /* ═══════════════════════════════════════════════ */
+        /*  RESPONSIVE                                     */
+        /* ═══════════════════════════════════════════════ */
+        @media (max-width: 520px) {
+            .stream-header { height: 46px; padding: 0 12px; }
+            .header-logo { width: 28px; height: 28px; }
+            .header-title { font-size: 16px; }
+            .btn-action { padding: 5px 10px; font-size: 12px; }
+            .btn-action .btn-label { display: none; }
+            .iframe-wrapper { top: 46px; }
+            .iframe-wrapper iframe { height: calc(100% + 52px); margin-top: -52px; }
+            .loading-overlay { top: 46px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══════════════ STREAMLOGIC HEADER ═══════════════ -->
+    <header class="stream-header" id="streamHeader">
+        <div class="header-left">
+            <img class="header-logo"
+                src="https://cdn.discordapp.com/attachments/1206645471976886352/1497258754616328333/IMG-20260423-WA0033.jpg?ex=69ecde60&is=69eb8ce0&hm=da87ac5c46e838744073912f4059500696920b76c8f3c5f24c9f4e7ff2774028"
+                alt="StreamLogic"
+                onerror="this.style.display='none'">
+            <span class="header-title">StreamLogic</span>
+        </div>
+        <div class="header-right">
+            <button class="btn-action btn-home" id="btnHome" title="Inicio">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span class="btn-label">Inicio</span>
+            </button>
+            <button class="btn-action" id="btnReload" title="Recargar">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"></polyline>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+                <span class="btn-label">Recargar</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- ═══════════════ LOADING ═══════════════ -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-ring"></div>
+        <div class="loading-text">Cargando</div>
+    </div>
+
+    <!-- ═══════════════ IFRAME ═══════════════ -->
+    <div class="iframe-wrapper" id="iframeWrapper">
+        <iframe id="jkFrame"
+            src="https://jkanime.net/"
+            allow="autoplay; fullscreen; encrypted-media"
+            allowfullscreen
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </div>
+
+    <script>
+    (function () {
+        const JKANIME = 'https://jkanime.net';
+        const frame   = document.getElementById('jkFrame');
+        const overlay  = document.getElementById('loadingOverlay');
+        const btnReload = document.getElementById('btnReload');
+        const btnHome   = document.getElementById('btnHome');
+
+        /* ── Show / hide loading overlay ── */
+        function showLoading()  { overlay.classList.remove('hidden'); }
+        function hideLoading()  { overlay.classList.add('hidden'); }
+
+        /* ── Try to inject CSS/JS into the iframe (same-origin only) ── */
+        function tryInject() {
+            try {
+                var doc = frame.contentDocument || frame.contentWindow.document;
+                if (!doc || !doc.body) return;
+
+                /* Skip if already injected */
+                if (doc.getElementById('sl-injected')) return;
+
+                /* Mark as injected */
+                var mark = doc.createElement('meta');
+                mark.id = 'sl-injected';
+                doc.head.appendChild(mark);
+
+                /* ── Inject CSS ── */
+                var css = doc.createElement('style');
+                css.textContent = [
+                    /* Hide JKAnime top header/nav bar */
+                    'header, .navbar, nav.navbar, .top-bar, #header, .site-header, .main-header, .navigation, .nav-main { display:none!important }',
+                    /* Hide "Aplicación oficial" banner */
+                    '.app-banner, .app-download, .app-promo, .download-app, .box_app, .box-app, [class*="app-banner"], [class*="app-download"], #app-banner { display:none!important }',
+                    /* Hide Comunidad & Más sidebar items */
+                    '.mobile-bottom-nav__item[href*="comunidad"], a[href*="comunidad"], .fullmenu.mobile-bottom-nav__item, .mobile-bottom-nav__item--mas { display:none!important }',
+                    'li:has(>a[href*="comunidad"]) { display:none!important }',
+                    /* Remove top padding/offset from hidden header */
+                    'body { padding-top:0!important; margin-top:0!important }',
+                    '.content-wrapper, .main-content, #content { margin-top:0!important; padding-top:0!important }'
+                ].join('\n');
+                doc.head.appendChild(css);
+
+                /* ── Inject JS ── */
+                var js = doc.createElement('script');
+                js.textContent = '(' + function () {
+                    /* Force dark mode */
+                    document.cookie = 'darkmode=true;path=/;max-age=31536000';
+                    document.documentElement.classList.add('dark-mode');
+                    document.body.classList.add('dark-mode');
+                    document.title = 'StreamLogic';
+
+                    function cleanup() {
+                        /* Hide header */
+                        document.querySelectorAll('header,.navbar,nav.navbar,.top-bar,.site-header,.main-header,#header,.navigation,.nav-main')
+                            .forEach(function (e) { e.style.display = 'none'; });
+
+                        /* Hide Comunidad & Más links */
+                        document.querySelectorAll('a').forEach(function (a) {
+                            var t = a.textContent.trim().toLowerCase();
+                            if (t === 'comunidad' || t === 'más' || t === 'mas') {
+                                (a.closest('li') || a.closest('.mobile-bottom-nav__item') || a).style.display = 'none';
+                            }
+                        });
+                        document.querySelectorAll('a[href*="comunidad"]').forEach(function (a) {
+                            (a.closest('li') || a).style.display = 'none';
+                        });
+                        document.querySelectorAll('.fullmenu.mobile-bottom-nav__item').forEach(function (e) {
+                            e.style.display = 'none';
+                        });
+
+                        /* Hide app banner by content */
+                        document.querySelectorAll('a[href*="aplicacion"]').forEach(function (a) {
+                            var p = a.parentElement;
+                            for (var i = 0; i < 5 && p && p.tagName !== 'BODY' && p.tagName !== 'MAIN'; i++) {
+                                if (p.textContent.indexOf('Descargar') !== -1 || p.textContent.indexOf('aplicación') !== -1) {
+                                    p.style.display = 'none'; break;
+                                }
+                                p = p.parentElement;
+                            }
+                        });
+
+                        /* Click dark mode toggle if not active */
+                        var toggle = document.querySelector('.switchBtn input[type="checkbox"]');
+                        if (toggle && !toggle.checked) toggle.click();
+
+                        document.body.style.paddingTop = '0';
+                        document.body.style.marginTop = '0';
+                    }
+
+                    cleanup();
+                    setTimeout(cleanup, 400);
+                    setTimeout(cleanup, 1200);
+                    setTimeout(cleanup, 3000);
+
+                    new MutationObserver(cleanup).observe(document.body, { childList: true, subtree: true });
+                } + ')();';
+                doc.body.appendChild(js);
+
+            } catch (e) {
+                /* Cross-origin — can't inject, which is expected */
+            }
+        }
+
+        /* ── Frame load handler ── */
+        frame.addEventListener('load', function () {
+            hideLoading();
+            tryInject();
+        });
+
+        /* ── Initial loading state ── */
+        showLoading();
+
+        /* ── Reload button ── */
+        btnReload.addEventListener('click', function () {
+            btnReload.classList.add('spinning');
+            showLoading();
+            try {
+                frame.contentWindow.location.reload();
+            } catch (e) {
+                frame.src = frame.src;
+            }
+            setTimeout(function () { btnReload.classList.remove('spinning'); }, 700);
+        });
+
+        /* ── Home button ── */
+        btnHome.addEventListener('click', function () {
+            showLoading();
+            try {
+                frame.contentWindow.location.href = JKANIME + '/';
+            } catch (e) {
+                frame.src = JKANIME + '/';
+            }
+        });
+
+        /* ── Keyboard shortcuts ── */
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+                e.preventDefault();
+                btnReload.click();
+            }
+        });
+
+    })();
+    </script>
+</body>
+</html>
