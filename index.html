@@ -286,7 +286,9 @@
             'var _origFetch=window.fetch;\n' +
             'window.fetch=function(url,opts){\n' +
             '  if(typeof url==="string"){\n' +
-            '    if(' + adblockEnabled + ' && (url.indexOf("ads")!==-1 || url.indexOf("tracker")!==-1 || url.indexOf("analytics")!==-1)) return Promise.reject("AdBlocked");\n' +
+            '    var isBlk=false;\n' +
+            '    try{ var rUrl=new URL(url,"' + JKBASE + '/"); if(window.parent.adBlockList && window.parent.adBlockList.has(rUrl.hostname)) isBlk=true; }catch(e){}\n' +
+            '    if(' + adblockEnabled + ' && (isBlk || url.indexOf("ads")!==-1 || url.indexOf("tracker")!==-1 || url.indexOf("analytics")!==-1)) return Promise.reject("AdBlocked");\n' +
             '    try{\n' +
             '      var r=new URL(url,"' + JKBASE + '/");\n' +
             '      if(r.hostname.indexOf("jkanime")!==-1){\n' +
@@ -300,7 +302,9 @@
             'var _origOpen=XMLHttpRequest.prototype.open;\n' +
             'XMLHttpRequest.prototype.open=function(m,url){\n' +
             '  if(typeof url==="string"){\n' +
-            '    if(' + adblockEnabled + ' && (url.indexOf("ads")!==-1 || url.indexOf("tracker")!==-1 || url.indexOf("analytics")!==-1)) return;\n' +
+            '    var isBlk=false;\n' +
+            '    try{ var rUrl=new URL(url,"' + JKBASE + '/"); if(window.parent.adBlockList && window.parent.adBlockList.has(rUrl.hostname)) isBlk=true; }catch(e){}\n' +
+            '    if(' + adblockEnabled + ' && (isBlk || url.indexOf("ads")!==-1 || url.indexOf("tracker")!==-1 || url.indexOf("analytics")!==-1)) return;\n' +
             '    try{\n' +
             '      var r=new URL(url,"' + JKBASE + '/");\n' +
             '      if(r.hostname.indexOf("jkanime")!==-1){\n' +
@@ -318,14 +322,18 @@
             '    mutation.addedNodes.forEach(function(node) {\n' +
             '      if (node.tagName === "SCRIPT" && node.src) {\n' +
             '        var src = node.src.toLowerCase();\n' +
-            '        if (src.indexOf("ads") !== -1 || src.indexOf("pop") !== -1 || src.indexOf("track") !== -1 || src.indexOf("analytics") !== -1) {\n' +
+            '        var isBlk=false;\n' +
+            '        try{ var rUrl=new URL(src,"' + JKBASE + '/"); if(window.parent.adBlockList && window.parent.adBlockList.has(rUrl.hostname)) isBlk=true; }catch(e){}\n' +
+            '        if (isBlk || src.indexOf("ads") !== -1 || src.indexOf("pop") !== -1 || src.indexOf("track") !== -1 || src.indexOf("analytics") !== -1) {\n' +
             '          node.parentNode.removeChild(node);\n' +
             '          console.log("AdBlock: Script blocked -> " + src);\n' +
             '        }\n' +
             '      }\n' +
             '      if (node.tagName === "IFRAME" && node.src) {\n' +
             '        var src = node.src.toLowerCase();\n' +
-            '        if (src.indexOf("ads") !== -1 || src.indexOf("banner") !== -1) {\n' +
+            '        var isBlk=false;\n' +
+            '        try{ var rUrl=new URL(src,"' + JKBASE + '/"); if(window.parent.adBlockList && window.parent.adBlockList.has(rUrl.hostname)) isBlk=true; }catch(e){}\n' +
+            '        if (isBlk || src.indexOf("ads") !== -1 || src.indexOf("banner") !== -1) {\n' +
             '          node.parentNode.removeChild(node);\n' +
             '          console.log("AdBlock: Iframe blocked -> " + src);\n' +
             '        }\n' +
@@ -484,8 +492,12 @@
             container.innerHTML = '';
             var iframe = document.createElement('iframe');
             iframe.id = 'jkFrame';
-            iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
-            iframe.style.cssText = 'width:100%;height:100%;border:none';
+            var sandboxAttrs = 'allow-same-origin allow-scripts allow-forms';
+            if (!adblockEnabled) {
+                sandboxAttrs += ' allow-popups';
+            }
+            iframe.setAttribute('sandbox', sandboxAttrs);
+            iframe.style.cssText = 'width:100%;height:100%;border:none;background:transparent;';
             container.appendChild(iframe);
 
             var doc = iframe.contentDocument || iframe.contentWindow.document;
@@ -517,6 +529,7 @@
         });
 
         var adblockEnabled = false;
+        window.adBlockList = new Set();
 
         fetch('https://get.geojs.io/v1/ip/country.json')
             .then(function(r) { return r.json(); })
@@ -530,9 +543,27 @@
                 }
                 if (code === 'MX') {
                     adblockEnabled = true;
-                    console.log('AdBlock Activado para México');
+                    console.log('AdBlock Activado para México - Descargando listas...');
+                    showLoad();
+                    fetch('https://raw.githubusercontent.com/blocklistproject/Lists/master/ads.txt')
+                        .then(function(r) { return r.text(); })
+                        .then(function(text) {
+                            var lines = text.split('\\n');
+                            for (var i = 0; i < lines.length; i++) {
+                                if (lines[i].startsWith('0.0.0.0 ')) {
+                                    window.adBlockList.add(lines[i].substring(8).trim());
+                                }
+                            }
+                            console.log('Blocklist cargada con ' + window.adBlockList.size + ' dominios.');
+                            loadPage(JKURL);
+                        })
+                        .catch(function(err) {
+                            console.error('No se pudo cargar la lista de anuncios', err);
+                            loadPage(JKURL);
+                        });
+                } else {
+                    loadPage(JKURL);
                 }
-                loadPage(JKURL);
             })
             .catch(function(err) {
                 console.error('IP Check Error:', err);
