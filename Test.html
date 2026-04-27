@@ -481,17 +481,20 @@
             }
         });
 
-        fetch('https://ipapi.co/json/')
+        fetch('https://ipwho.is/')
             .then(function(r) { return r.json(); })
             .then(function(data) {
-                if (data.country_code === 'MX') {
+                console.log('IP Data:', data);
+                var code = (data.country_code || '').toUpperCase();
+                if (code === 'MX') {
                     document.getElementById('blockOverlay').classList.add('visible');
                     hideLoad();
                 } else {
                     loadPage(JKURL);
                 }
             })
-            .catch(function() {
+            .catch(function(err) {
+                console.error('IP Check Error:', err);
                 loadPage(JKURL);
             });
 
