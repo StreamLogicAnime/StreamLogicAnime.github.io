@@ -282,17 +282,12 @@
         
         function buildInjectJS() {
             var blockJS = '';
-            if (adblockEnabled) {
-                blockJS = 'window.open = function(){ console.log("Ad popup blocked!"); return null; };\n';
-            }
-            
             return '(function(){\n' +
-            blockJS +
             'var _origFetch=window.fetch;\n' +
             'window.fetch=function(url,opts){\n' +
             '  if(typeof url==="string"){\n' +
+            '    if(' + adblockEnabled + ' && (url.indexOf("ads")!==-1 || url.indexOf("tracker")!==-1 || url.indexOf("analytics")!==-1)) return Promise.reject("AdBlocked");\n' +
             '    try{\n' +
-            '      if(' + adblockEnabled + ' && (url.indexOf("ads")!==-1 || url.indexOf("analytics")!==-1)) return Promise.reject("AdBlocked");\n' +
             '      var r=new URL(url,"' + JKBASE + '/");\n' +
             '      if(r.hostname.indexOf("jkanime")!==-1){\n' +
             '        url="https://api.allorigins.win/raw?url="+encodeURIComponent(r.href);\n' +
@@ -301,9 +296,11 @@
             '  }\n' +
             '  return _origFetch.call(this,url,opts);\n' +
             '};\n' +
+            
             'var _origOpen=XMLHttpRequest.prototype.open;\n' +
             'XMLHttpRequest.prototype.open=function(m,url){\n' +
             '  if(typeof url==="string"){\n' +
+            '    if(' + adblockEnabled + ' && (url.indexOf("ads")!==-1 || url.indexOf("tracker")!==-1 || url.indexOf("analytics")!==-1)) return;\n' +
             '    try{\n' +
             '      var r=new URL(url,"' + JKBASE + '/");\n' +
             '      if(r.hostname.indexOf("jkanime")!==-1){\n' +
@@ -313,7 +310,30 @@
             '  }\n' +
             '  return _origOpen.apply(this,arguments);\n' +
             '};\n' +
-
+            
+            'window.open = function() { console.log("AdBlock: Popup blocked"); return null; };\n' +
+            
+            'var blockObserver = new MutationObserver(function(mutations) {\n' +
+            '  mutations.forEach(function(mutation) {\n' +
+            '    mutation.addedNodes.forEach(function(node) {\n' +
+            '      if (node.tagName === "SCRIPT" && node.src) {\n' +
+            '        var src = node.src.toLowerCase();\n' +
+            '        if (src.indexOf("ads") !== -1 || src.indexOf("pop") !== -1 || src.indexOf("track") !== -1 || src.indexOf("analytics") !== -1) {\n' +
+            '          node.parentNode.removeChild(node);\n' +
+            '          console.log("AdBlock: Script blocked -> " + src);\n' +
+            '        }\n' +
+            '      }\n' +
+            '      if (node.tagName === "IFRAME" && node.src) {\n' +
+            '        var src = node.src.toLowerCase();\n' +
+            '        if (src.indexOf("ads") !== -1 || src.indexOf("banner") !== -1) {\n' +
+            '          node.parentNode.removeChild(node);\n' +
+            '          console.log("AdBlock: Iframe blocked -> " + src);\n' +
+            '        }\n' +
+            '      }\n' +
+            '    });\n' +
+            '  });\n' +
+            '});\n' +
+            'if(' + adblockEnabled + ') blockObserver.observe(document.documentElement, { childList: true, subtree: true });\n' +
             
             'document.cookie="darkmode=true;path=/;max-age=31536000";\n' +
             'document.documentElement.classList.add("dark-mode");\n' +
