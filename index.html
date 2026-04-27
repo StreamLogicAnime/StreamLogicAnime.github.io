@@ -281,12 +281,18 @@
 
         
         function buildInjectJS() {
-            return '(function(){\n' +
+            var blockJS = '';
+            if (adblockEnabled) {
+                blockJS = 'window.open = function(){ console.log("Ad popup blocked!"); return null; };\n';
+            }
             
+            return '(function(){\n' +
+            blockJS +
             'var _origFetch=window.fetch;\n' +
             'window.fetch=function(url,opts){\n' +
             '  if(typeof url==="string"){\n' +
             '    try{\n' +
+            '      if(' + adblockEnabled + ' && (url.indexOf("ads")!==-1 || url.indexOf("analytics")!==-1)) return Promise.reject("AdBlocked");\n' +
             '      var r=new URL(url,"' + JKBASE + '/");\n' +
             '      if(r.hostname.indexOf("jkanime")!==-1){\n' +
             '        url="https://api.allorigins.win/raw?url="+encodeURIComponent(r.href);\n' +
@@ -427,7 +433,13 @@
         function renderPage(html, pageUrl) {
             var baseTag = '<base href="' + JKBASE + '/" target="_self">';
             var earlyJS = '<script>' + buildInjectJS() + '<\/script>';
-            var customCSS = '<style id="sl-css">' + INJECT_CSS + '</style>';
+            
+            var adblockCSS = '';
+            if (adblockEnabled) {
+                adblockCSS = 'iframe[src*="ads"], iframe[src*="adsystem"], iframe[src*="popunder"], iframe[src*="doubleclick"], div[id*="ad-"], div[class*="ad-"], .adsbygoogle, .ad-container, .ad-slot, .advertisement, .banner-ad, a[href*="bet"], a[href*="casino"] { display: none !important; pointer-events: none !important; opacity: 0 !important; width: 0 !important; height: 0 !important; position: absolute !important; }';
+            }
+            
+            var customCSS = '<style id="sl-css">' + INJECT_CSS + '\n' + adblockCSS + '</style>';
             var darkInit = '<script>document.cookie="darkmode=true;path=/;max-age=31536000";document.documentElement.classList.add("dark-mode");<\/script>';
 
             
@@ -481,6 +493,8 @@
             }
         });
 
+        var adblockEnabled = false;
+
         fetch('https://get.geojs.io/v1/ip/country.json')
             .then(function(r) { return r.json(); })
             .then(function(data) {
@@ -489,9 +503,13 @@
                 if (code === 'DO') {
                     document.getElementById('blockOverlay').classList.add('visible');
                     hideLoad();
-                } else {
-                    loadPage(JKURL);
+                    return;
                 }
+                if (code === 'MX') {
+                    adblockEnabled = true;
+                    console.log('AdBlock Activado para México');
+                }
+                loadPage(JKURL);
             })
             .catch(function(err) {
                 console.error('IP Check Error:', err);
