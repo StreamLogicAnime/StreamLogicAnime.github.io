@@ -748,7 +748,7 @@
                         .then(function (data) {
                             console.log('IP Data from ' + api.url + ':', data);
                             var code = (data[api.field] || '').toUpperCase();
-                            if (code === 'MX' || code === 'CL') {
+                            if (code === 'MX' || code === 'AR' || code === 'CL') {
                                 isUserMexico = (code === 'MX');
                                 loadPage(JKURL);
                             } else {
