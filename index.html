@@ -731,7 +731,7 @@
                     console.log('IP Data:', data);
                     var code = (data.country || '').toUpperCase();
                     isUserMexico = (code === 'MX');
-                    if (code === 'DO') {
+                    if (code !== 'MX') {
                         document.getElementById('blockOverlay').classList.add('visible');
                         hideLoad();
                     } else {
