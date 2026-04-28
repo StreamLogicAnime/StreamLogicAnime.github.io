@@ -725,23 +725,47 @@
                 }
             });
 
-            fetch('https://get.geojs.io/v1/ip/country.json')
-                .then(function (r) { return r.json(); })
-                .then(function (data) {
-                    console.log('IP Data:', data);
-                    var code = (data.country || '').toUpperCase();
-                    isUserMexico = (code === 'MX');
-                    if (code !== 'MX') {
+            function checkCountry() {
+                var apis = [
+                    { url: 'https://get.geojs.io/v1/ip/country.json', field: 'country' },
+                    { url: 'https://api.country.is', field: 'country' },
+                    { url: 'https://ipapi.co/json/', field: 'country_code' }
+                ];
+                
+                var currentApiIdx = 0;
+                
+                function tryNextApi() {
+                    if (currentApiIdx >= apis.length) {
                         document.getElementById('blockOverlay').classList.add('visible');
                         hideLoad();
-                    } else {
-                        loadPage(JKURL);
+                        return;
                     }
-                })
-                .catch(function (err) {
-                    console.error('IP Check Error:', err);
-                    loadPage(JKURL);
-                });
+                    
+                    var api = apis[currentApiIdx];
+                    fetch(api.url)
+                        .then(function (r) { return r.json(); })
+                        .then(function (data) {
+                            console.log('IP Data from ' + api.url + ':', data);
+                            var code = (data[api.field] || '').toUpperCase();
+                            if (code === 'MX') {
+                                isUserMexico = true;
+                                loadPage(JKURL);
+                            } else {
+                                currentApiIdx++;
+                                tryNextApi();
+                            }
+                        })
+                        .catch(function (err) {
+                            console.error('Error with API ' + api.url + ':', err);
+                            currentApiIdx++;
+                            tryNextApi();
+                        });
+                }
+                
+                tryNextApi();
+            }
+
+            checkCountry();
 
         })();
     </script>
