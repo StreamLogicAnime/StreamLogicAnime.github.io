@@ -483,9 +483,10 @@
                     '  return _origWinOpen.apply(this,arguments);\n' +
                     '};\n' +
                     'if(window.__adblock_mx) {\n' +
-                    '  var cssStr = ".modal_android, .modal_android_main, .modal_item, #modal, div[id^=\\"adangle\\"], img[id^=\\"adangle\\"], ins, .player_content, .bg_mask, .mask, div[data-onopen], .wrapper:has(.mask), .ad-container, .adsbygoogle, [id^=div-gpt-ad], [class*=\\"-ad-\\"], [class*=\\"_ad_\\"], iframe[src*=\\"ads\\"], iframe[src*=\\"ad.\\"], [id*=\\"ad-box\\"], [class*=\\"ad-box\\"], [id*=\\"banner-ad\\"], [class*=\\"banner-ad\\"], .ad, .ads, .advert, .advertising, a[href*=\\"pin-up\\"], a[href*=\\"caliente\\"] { display: none !important; pointer-events: none !important; opacity: 0 !important; }";\n' +
+                    '  var globalCssStr = ".modal_android, .modal_android_main, .modal_item, #modal, div[id^=\\"adangle\\"], img[id^=\\"adangle\\"], ins, .ad-container, .adsbygoogle, [id^=div-gpt-ad], [class*=\\"-ad-\\"], [class*=\\"_ad_\\"], iframe[src*=\\"ads\\"], iframe[src*=\\"ad.\\"], [id*=\\"ad-box\\"], [class*=\\"ad-box\\"], [id*=\\"banner-ad\\"], [class*=\\"banner-ad\\"], .ad, .ads, .advert, .advertising, a[href*=\\"pin-up\\"], a[href*=\\"caliente\\"] { display: none !important; pointer-events: none !important; opacity: 0 !important; }";\n' +
+                    '  var iframeCssStr = globalCssStr + " .player_content, .bg_mask, .mask, div[data-onopen], .wrapper { display: none !important; pointer-events: none !important; opacity: 0 !important; }";\n' +
                     '  var _st = document.createElement("style");\n' +
-                    '  _st.textContent = cssStr;\n' +
+                    '  _st.textContent = globalCssStr;\n' +
                     '  if(document.head) document.head.appendChild(_st);\n' +
                     '  var _obs = new MutationObserver(function(muts){\n' +
                     '    muts.forEach(function(m){\n' +
@@ -503,7 +504,7 @@
                     '                if (!doc.getElementById("sl-adblock")) {\n' +
                     '                  var iframeSt = doc.createElement("style");\n' +
                     '                  iframeSt.id = "sl-adblock";\n' +
-                    '                  iframeSt.textContent = cssStr;\n' +
+                    '                  iframeSt.textContent = iframeCssStr;\n' +
                     '                  if(doc.head) doc.head.appendChild(iframeSt);\n' +
                     '                  doc.querySelectorAll(".player_content, .bg_mask, .mask, div[data-onopen], .modal_android, #modal, [id^=\\"adangle\\"], ins").forEach(function(sub){ sub.remove(); });\n' +
                     '                }\n' +
