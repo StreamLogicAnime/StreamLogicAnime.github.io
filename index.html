@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StreamLogic</title>
     <link rel="icon"
-        href="https://i.postimg.cc/tgPnMFp6/IMG-20260423-WA0033-(1).jpg"
+        href="https://cdn.discordapp.com/attachments/1206645471976886352/1497258754616328333/IMG-20260423-WA0033.jpg?ex=69ecde60&is=69eb8ce0&hm=da87ac5c46e838744073912f4059500696920b76c8f3c5f24c9f4e7ff2774028"
         type="image/jpeg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -434,21 +434,13 @@
                         '  window.__adblock_list=new Set(t.split("\\n").filter(function(l){return l&&!l.startsWith("#")&&l.indexOf("0.0.0.0 ")===0}).map(function(l){return l.split(" ")[1].trim()}));\n' +
                         '}).catch(function(){});\n';
                 }
+
                 js +=
-                    'var _u = new URL(window.location.href);\n' +
-                    'var _t = _u.searchParams ? _u.searchParams.get("url") : "";\n' +
-                    'var isHomePage = _t === "https://jkanime.net/" || _t === "https://jkanime.net";\n' +
                     'function isBlockedUrl(u, isLink) {\n' +
                     '  if (!window.__adblock_mx) return false;\n' +
                     '  if (typeof u !== "string") return false;\n' +
+                    '  if (isLink && u.length > 180 && u.indexOf("jkanime.net") === -1) return true;\n' +
                     '  var str = u.toLowerCase();\n' +
-                    '  if (isLink) {\n' +
-                    '    if (isHomePage) {\n' +
-                    '      if (u.length > 180 && str.indexOf("jkanime.net") === -1) return true;\n' +
-                    '    } else {\n' +
-                    '      if (str.indexOf("jkanime.net") === -1) return true;\n' +
-                    '    }\n' +
-                    '  }\n' +
                     '  var adKw = ["pin-up","pinup","caliente","exoclick","adsterra","popads","popcash","propellerads","monetag","a-ads","onclick","1xbet","bet365","adcash","yllix","hilltopads","betano","codere","adskeeper","mgid","adbooth","cpmstar","revenuehits","ad-maven","infolinks","chitika","bidvertiser","juicyads","plugrush","betway","bovada","draftkings","fanduel","betfair","williamhill","unibet","bwin","888sport","betfred","betvictor","paddypower","skybet","ladbrokes","coral","betonline","sportsbetting","bodog","betus","mybookie","outbrain","taboola","adthor"];\n' +
                     '  for (var i=0; i<adKw.length; i++) {\n' +
                     '    if (str.indexOf(adKw[i]) !== -1) return true;\n' +
@@ -490,9 +482,17 @@
                     '  return _origOpen.apply(this,arguments);\n' +
                     '};\n' +
                     'var _origWinOpen=window.open;\n' +
+                    'window.__lastRedirectTime = 0;\n' +
+                    'function canRedirect() {\n' +
+                    '  var now = Date.now();\n' +
+                    '  if (now - window.__lastRedirectTime > 60000) {\n' +
+                    '    window.__lastRedirectTime = now;\n' +
+                    '    return true;\n' +
+                    '  }\n' +
+                    '  return false;\n' +
+                    '}\n' +
                     'window.open=function(url,name,features){\n' +
-                    '  if(!isHomePage && window.__adblock_mx) return null;\n' +
-                    '  if(isBlockedUrl(url, true)) return null;\n' +
+                    '  if(isBlockedUrl(url, true) && !canRedirect()) return null;\n' +
                     '  return _origWinOpen.apply(this,arguments);\n' +
                     '};\n' +
                     'if(window.__adblock_mx) {\n' +
@@ -536,20 +536,12 @@
                     '             n.removeAttribute("src"); n.remove();\n' +
                     '          }\n' +
                     '        }\n' +
-                    '        if (n.tagName==="A" && n.href && isBlockedUrl(n.href, true)) {\n' +
-                    '          n.removeAttribute("href"); n.remove();\n' +
-                    '        }\n' +
                     '        if(n.querySelectorAll) {\n' +
                     '          n.querySelectorAll(".modal_android, .modal_android_main, .modal_item, .bg_mask, .mask").forEach(function(sub){ sub.style.opacity="0"; setTimeout(function(){try{sub.click();}catch(e){} sub.remove();}, 150); });\n' +
                     '          n.querySelectorAll("#modal, [id^=\\"adangle\\"], ins").forEach(function(sub){ sub.remove(); });\n' +
                     '          n.querySelectorAll("iframe, script, img, source").forEach(function(sub){\n' +
                     '            if(sub.src && isBlockedUrl(sub.src, false)) {\n' +
                     '              sub.removeAttribute("src"); sub.remove();\n' +
-                    '            }\n' +
-                    '          });\n' +
-                    '          n.querySelectorAll("a").forEach(function(sub){\n' +
-                    '            if(sub.href && isBlockedUrl(sub.href, true)) {\n' +
-                    '              sub.removeAttribute("href"); sub.remove();\n' +
                     '            }\n' +
                     '          });\n' +
                     '        }\n' +
@@ -559,7 +551,7 @@
                     '  if(document.documentElement) _obs.observe(document.documentElement, {childList: true, subtree: true});\n' +
                     '  document.addEventListener("click", function(e) {\n' +
                     '    var a = e.target.closest("a");\n' +
-                    '    if (a && a.href && isBlockedUrl(a.href, true)) {\n' +
+                    '    if (a && a.href && isBlockedUrl(a.href, true) && !canRedirect()) {\n' +
                     '      e.preventDefault();\n' +
                     '      e.stopPropagation();\n' +
                     '    }\n' +
@@ -614,32 +606,12 @@
 
                     'document.addEventListener("click",function(e){\n' +
                     '  var a=e.target.closest("a");\n' +
-                    '  var href = a ? a.getAttribute("href") : null;\n' +
-                    '  if(!a || !href) {\n' +
-                    '     var t = e.target.closest("[data-href], [onclick]");\n' +
-                    '     if(t) {\n' +
-                    '        var dHref = t.getAttribute("data-href");\n' +
-                    '        var onClick = t.getAttribute("onclick") || "";\n' +
-                    '        var m = onClick.match(/window\\.location\\.href\\s*=\\s*[\\"\\']([^\\"\\']+)[\\"\\']/);\n' +
-                    '        var targetUrl = dHref || (m ? m[1] : null);\n' +
-                    '        if(targetUrl) {\n' +
-                    '           var res;\n' +
-                    '           try{res=new URL(targetUrl,"' + JKBASE + '/").href}catch(er){return}\n' +
-                    '           if(res.indexOf("jkanime.net")!==-1) {\n' +
-                    '              e.preventDefault();e.stopPropagation();\n' +
-                    '              window.parent.postMessage({type:"sl-nav",url:res},"*");\n' +
-                    '           }\n' +
-                    '        }\n' +
-                    '     }\n' +
-                    '     return;\n' +
-                    '  }\n' +
-                    '  if(href.charAt(0)==="#"||href.indexOf("javascript:")===0)return;\n' +
+                    '  if(!a)return;\n' +
+                    '  var href=a.getAttribute("href");\n' +
+                    '  if(!href||href.charAt(0)==="#"||href.indexOf("javascript:")===0)return;\n' +
                     '  var resolved;\n' +
                     '  try{resolved=new URL(href,"' + JKBASE + '/").href}catch(er){return}\n' +
-                    '  if(resolved.indexOf("jkanime.net")===-1) {\n' +
-                    '     if (!isHomePage) { e.preventDefault(); e.stopPropagation(); }\n' +
-                    '     return;\n' +
-                    '  }\n' +
+                    '  if(resolved.indexOf("jkanime.net")===-1)return;\n' +
                     '  if(resolved.indexOf("#")!==-1 && resolved.split("#")[0].replace(/\\/$/,"") === "' + JKBASE + '") { e.preventDefault(); window.scrollTo(0,0); return; }\n' +
                     '  e.preventDefault();e.stopPropagation();\n' +
                     '  window.parent.postMessage({type:"sl-nav",url:resolved},"*");\n' +
@@ -778,15 +750,8 @@
                     }
                     
                     var api = apis[currentApiIdx];
-                    var ctrl = new AbortController();
-                    var timeoutId = setTimeout(function() { ctrl.abort(); }, 3000);
-                    
-                    fetch(api.url, { signal: ctrl.signal })
-                        .then(function (r) {
-                            clearTimeout(timeoutId);
-                            if (!r.ok) throw new Error('Status ' + r.status);
-                            return r.json(); 
-                        })
+                    fetch(api.url)
+                        .then(function (r) { return r.json(); })
                         .then(function (data) {
                             console.log('IP Data from ' + api.url + ':', data);
                             var code = (data[api.field] || '').toUpperCase();
@@ -799,7 +764,6 @@
                             }
                         })
                         .catch(function (err) {
-                            clearTimeout(timeoutId);
                             console.error('Error with API ' + api.url + ':', err);
                             currentApiIdx++;
                             tryNextApi();
