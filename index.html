@@ -151,11 +151,13 @@
         }
 
         #iframeContainer {
-            position: fixed;
+            position: absolute;
             top: 52px;
             left: 0;
             right: 0;
             bottom: 0;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             background: #0d0d17;
             z-index: 1;
         }
@@ -165,8 +167,7 @@
             height: 100%;
             border: none;
             display: block;
-            touch-action: auto;
-            -webkit-overflow-scrolling: touch;
+            pointer-events: auto;
         }
 
         .loading-overlay {
@@ -454,40 +455,8 @@
                     '}\n';
 
                 js +=
-                    'var _origFetch=window.fetch;\n' +
-                    'window.fetch=function(url,opts){\n' +
-                    '  if(isBlockedUrl(url, false)) return Promise.reject(new Error("adblock"));\n' +
-                    '  if(typeof url==="string"){\n' +
-                    '    try{\n' +
-                    '      var r=new URL(url,"' + JKBASE + '/");\n' +
-                    '      if(r.hostname.indexOf("jkanime")!==-1){\n' +
-                    '        url="https://api.allorigins.win/raw?url="+encodeURIComponent(r.href);\n' +
-                    '      }\n' +
-                    '    }catch(e){}\n' +
-                    '  }\n' +
-                    '  return _origFetch.call(this,url,opts);\n' +
-                    '};\n' +
-                    'var _origOpen=XMLHttpRequest.prototype.open;\n' +
-                    'XMLHttpRequest.prototype.open=function(m,url){\n' +
-                    '  if(isBlockedUrl(url, false)) { arguments[1]="data:,"; }\n' +
-                    '  else if(typeof url==="string"){\n' +
-                    '    try{\n' +
-                    '      var r=new URL(url,"' + JKBASE + '/");\n' +
-                    '      if(r.hostname.indexOf("jkanime")!==-1){\n' +
-                    '        arguments[1]="https://api.allorigins.win/raw?url="+encodeURIComponent(r.href);\n' +
-                    '      }\n' +
-                    '    }catch(e){}\n' +
-                    '  }\n' +
-                    '  return _origOpen.apply(this,arguments);\n' +
-                    '};\n' +
-                    'var _origWinOpen=window.open;\n' +
-                    'window.open=function(url,name,features){\n' +
-                    '  if(isBlockedUrl(url, true)) return null;\n' +
-                    '  return _origWinOpen.apply(this,arguments);\n' +
-                    '};\n' +
                     'if(window.__adblock_mx) {\n' +
                     '  var globalCssStr = "#modal, div[id^=\\"adangle\\"], img[id^=\\"adangle\\"], ins, .ad-container, .adsbygoogle, [id^=div-gpt-ad], [class*=\\"-ad-\\"], [class*=\\"_ad_\\"], iframe[src*=\\"ads\\"], iframe[src*=\\"ad.\\"], [id*=\\"ad-box\\"], [class*=\\"ad-box\\"], [id*=\\"banner-ad\\"], [class*=\\"banner-ad\\"], .ad, .ads, .advert, .advertising, a[href*=\\"pin-up\\"], a[href*=\\"caliente\\"] { display: none !important; pointer-events: none !important; opacity: 0 !important; }";\n' +
-                    '  var iframeCssStr = globalCssStr + " div[data-onopen], .wrapper { display: none !important; pointer-events: none !important; opacity: 0 !important; }";\n' +
                     '  var _st = document.createElement("style");\n' +
                     '  _st.textContent = globalCssStr;\n' +
                     '  if(document.head) document.head.appendChild(_st);\n' +
@@ -495,65 +464,14 @@
                     '    muts.forEach(function(m){\n' +
                     '      m.addedNodes.forEach(function(n){\n' +
                     '        if(n.nodeType !== 1) return;\n' +
-                    '        if (n.tagName==="IFRAME") {\n' +
-                    '          n.addEventListener("load", function() {\n' +
-                    '            try {\n' +
-                    '              var doc = n.contentDocument || n.contentWindow.document;\n' +
-                    '              if (doc && doc.body) {\n' +
-                    '                if (doc.body.querySelector("script#jsEditor, .wrapper > .mask") && !doc.body.querySelector("video")) {\n' +
-                    '                  n.remove();\n' +
-                    '                  return;\n' +
-                    '                }\n' +
-                    '                if (!doc.getElementById("sl-adblock")) {\n' +
-                    '                  var iframeSt = doc.createElement("style");\n' +
-                    '                  iframeSt.id = "sl-adblock";\n' +
-                    '                  iframeSt.textContent = iframeCssStr;\n' +
-                    '                  if(doc.head) doc.head.appendChild(iframeSt);\n' +
-                    '                  doc.querySelectorAll(".bg_mask, .mask, div[data-onopen], .modal_android, #modal, [id^=\\"adangle\\"], ins").forEach(function(sub){ sub.remove(); });\n' +
-                    '                }\n' +
-                    '              }\n' +
-                    '            } catch(e) {}\n' +
-                    '          });\n' +
-                    '        }\n' +
-                    '        if (n.matches && n.matches(".modal_android, .modal_android_main, .modal_item, .bg_mask, .mask")) {\n' +
-                    '          n.style.opacity = "0";\n' +
-                    '          setTimeout(function() { try{ n.click(); }catch(e){} n.remove(); }, 150);\n' +
-                    '          return;\n' +
-                    '        }\n' +
-                    '        if (n.matches && n.matches("#modal, [id^=\\"adangle\\"], ins")) { n.remove(); return; }\n' +
-                    '        if ((n.tagName==="IFRAME" || n.tagName==="SCRIPT" || n.tagName==="IMG" || n.tagName==="SOURCE") && n.src){\n' +
-                    '          if(isBlockedUrl(n.src, false)) {\n' +
-                    '             n.removeAttribute("src"); n.remove();\n' +
-                    '          }\n' +
-                    '        }\n' +
-                    '        if (n.tagName==="A" && n.href && isBlockedUrl(n.href, true)) {\n' +
-                    '          n.removeAttribute("href"); n.remove();\n' +
-                    '        }\n' +
+                    '        if (n.matches && n.matches("#modal, [id^=\\"adangle\\"], ins, .modal_android, .modal_android_main, .modal_item, .bg_mask, .mask")) { n.remove(); return; }\n' +
                     '        if(n.querySelectorAll) {\n' +
-                    '          n.querySelectorAll(".modal_android, .modal_android_main, .modal_item, .bg_mask, .mask").forEach(function(sub){ sub.style.opacity="0"; setTimeout(function(){try{sub.click();}catch(e){} sub.remove();}, 150); });\n' +
-                    '          n.querySelectorAll("#modal, [id^=\\"adangle\\"], ins").forEach(function(sub){ sub.remove(); });\n' +
-                    '          n.querySelectorAll("iframe, script, img, source").forEach(function(sub){\n' +
-                    '            if(sub.src && isBlockedUrl(sub.src, false)) {\n' +
-                    '              sub.removeAttribute("src"); sub.remove();\n' +
-                    '            }\n' +
-                    '          });\n' +
-                    '          n.querySelectorAll("a").forEach(function(sub){\n' +
-                    '            if(sub.href && isBlockedUrl(sub.href, true)) {\n' +
-                    '              sub.removeAttribute("href"); sub.remove();\n' +
-                    '            }\n' +
-                    '          });\n' +
+                    '          n.querySelectorAll("#modal, [id^=\\"adangle\\"], ins, .modal_android, .modal_android_main, .modal_item, .bg_mask, .mask").forEach(function(sub){ sub.remove(); });\n' +
                     '        }\n' +
                     '      });\n' +
                     '    });\n' +
                     '  });\n' +
                     '  if(document.documentElement) _obs.observe(document.documentElement, {childList: true, subtree: true});\n' +
-                    '  document.addEventListener("click", function(e) {\n' +
-                    '    var a = e.target.closest("a");\n' +
-                    '    if (a && a.href && isBlockedUrl(a.href, true)) {\n' +
-                    '      e.preventDefault();\n' +
-                    '      e.stopPropagation();\n' +
-                    '    }\n' +
-                    '  }, true);\n' +
                     '}\n';
 
                 return js +
@@ -699,9 +617,8 @@
                 container.innerHTML = '';
                 var iframe = document.createElement('iframe');
                 iframe.id = 'jkFrame';
-                iframe.setAttribute('allowfullscreen', '');
-                iframe.setAttribute('allow', 'autoplay; fullscreen; encrypted-media');
-                iframe.style.cssText = 'width:100%;height:100%;border:none;touch-action:auto';
+                iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms allow-presentation allow-downloads allow-top-navigation-by-user-activation');
+                iframe.style.cssText = 'width:100%;height:100%;border:none';
                 container.appendChild(iframe);
 
                 var doc = iframe.contentDocument || iframe.contentWindow.document;
