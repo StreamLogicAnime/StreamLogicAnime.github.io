@@ -639,9 +639,9 @@
                     var adKw = ["pin-up","pinup","caliente","exoclick","adsterra","popads","popcash","propellerads","monetag","a-ads","onclick","1xbet","bet365","adcash","yllix","hilltopads","betano","codere","adskeeper","mgid","adbooth","cpmstar","revenuehits","ad-maven","infolinks","chitika","bidvertiser","juicyads","plugrush","betway","bovada","draftkings","fanduel","betfair","williamhill","unibet","bwin","888sport","betfred","betvictor","paddypower","skybet","ladbrokes","coral","betonline","sportsbetting","bodog","betus","mybookie","outbrain","taboola","adthor","bebi.com","runative","clickadu","trafficstars","adxad","adxxx","ero-advertising","twinred","richads","zeropark","tonic","popmyads","popunder","adform","smartadserver","casalemedia","rubiconproject","pubmatic","openx","appnexus","criteo"];
                     for (var i=0; i<adKw.length; i++) {
                         var kw = adKw[i];
-                        var scriptRegex = new RegExp('<script[^>]*src=["\\'][^"\\']*?' + kw + '[^"\\']*?["\\'][^>]*>[\\\\s\\\\S]*?<\\\\/script>', 'gi');
+                        var scriptRegex = new RegExp('<script[^>]*src=["\\\'][^"\\\']*?' + kw + '[^"\\\']*?["\\\'][^>]*>[\\\\s\\\\S]*?<\\\\/script>', 'gi');
                         html = html.replace(scriptRegex, '');
-                        var iframeRegex = new RegExp('<iframe[^>]*src=["\\'][^"\\']*?' + kw + '[^"\\']*?["\\'][^>]*>[\\\\s\\\\S]*?<\\\\/iframe>', 'gi');
+                        var iframeRegex = new RegExp('<iframe[^>]*src=["\\\'][^"\\\']*?' + kw + '[^"\\\']*?["\\\'][^>]*>[\\\\s\\\\S]*?<\\\\/iframe>', 'gi');
                         html = html.replace(iframeRegex, '');
                     }
                 }
