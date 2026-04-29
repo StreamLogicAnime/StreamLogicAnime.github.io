@@ -547,16 +547,28 @@
                         'var _origFetch=window.fetch;\n' +
                         'window.fetch=function(url,opts){\n' +
                         '  if(isBlockedUrl(url, false)) return Promise.reject(new Error("adblock"));\n' +
-                        '  if(typeof url==="string" && url.indexOf("jkanime")!==-1 && url.indexOf("http")===0){\n' +
-                        '    url="https://api.allorigins.win/raw?url="+encodeURIComponent(url);\n' +
+                        '  if(typeof url==="string"){\n' +
+                        '    var fullUrl=url;\n' +
+                        '    if(url.indexOf("http")!==0){\n' +
+                        '      fullUrl="' + JKBASE + '"+(url.charAt(0)==="/"?"":"/")+url;\n' +
+                        '    }\n' +
+                        '    if(fullUrl.indexOf("jkanime.net")!==-1){\n' +
+                        '      arguments[0]="https://api.allorigins.win/raw?url="+encodeURIComponent(fullUrl);\n' +
+                        '    }\n' +
                         '  }\n' +
                         '  return _origFetch.apply(this,arguments);\n' +
                         '};\n' +
                         'var _origOpen=XMLHttpRequest.prototype.open;\n' +
                         'XMLHttpRequest.prototype.open=function(m,url){\n' +
                         '  if(isBlockedUrl(url, false)) { arguments[1]="data:,"; }\n' +
-                        '  else if(typeof url==="string" && url.indexOf("jkanime")!==-1 && url.indexOf("http")===0){\n' +
-                        '    arguments[1]="https://api.allorigins.win/raw?url="+encodeURIComponent(url);\n' +
+                        '  else if(typeof url==="string"){\n' +
+                        '    var fullUrl=url;\n' +
+                        '    if(url.indexOf("http")!==0){\n' +
+                        '      fullUrl="' + JKBASE + '"+(url.charAt(0)==="/"?"":"/")+url;\n' +
+                        '    }\n' +
+                        '    if(fullUrl.indexOf("jkanime.net")!==-1){\n' +
+                        '      arguments[1]="https://api.allorigins.win/raw?url="+encodeURIComponent(fullUrl);\n' +
+                        '    }\n' +
                         '  }\n' +
                         '  return _origOpen.apply(this,arguments);\n' +
                         '};\n';
