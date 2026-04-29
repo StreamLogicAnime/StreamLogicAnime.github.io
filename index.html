@@ -291,10 +291,76 @@
         }
 
 
+        .header-center {
+            flex: 1;
+            max-width: 400px;
+            margin: 0 20px;
+            position: relative;
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(245, 197, 24, 0.2);
+            border-radius: 20px;
+            padding: 6px 35px 6px 15px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(245, 197, 24, 0.6);
+            box-shadow: 0 0 10px rgba(245, 197, 24, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.4);
+            pointer-events: none;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-input:focus + .search-icon {
+            color: #f5c518;
+        }
+
         @media (max-width: 520px) {
             .stream-header {
                 height: 46px;
-                padding: 0 12px;
+                padding: 0 10px;
+            }
+
+            .header-center {
+                margin: 0 5px;
+                max-width: 120px;
+            }
+
+            .search-input {
+                padding: 4px 25px 4px 10px;
+                font-size: 11px;
+            }
+
+            .search-icon {
+                right: 8px;
+            }
+
+            .search-icon svg {
+                width: 12px;
+                height: 12px;
             }
 
             .header-logo {
@@ -337,6 +403,17 @@
                 src="https://i.postimg.cc/tgPnMFp6/IMG-20260423-WA0033-(1).jpg"
                 alt="StreamLogic" onerror="this.style.display='none'">
             <span class="header-title">StreamLogic</span>
+        </div>
+        <div class="header-center">
+            <div class="search-wrapper">
+                <input type="text" class="search-input" id="searchInput" placeholder="Buscar Anime...">
+                <div class="search-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+            </div>
         </div>
         <div class="header-right">
             <button class="btn-action btn-home" id="btnHome" title="Inicio">
@@ -425,6 +502,7 @@
             var btnDirectorio = document.getElementById('btnDirectorio');
             var btnHorario = document.getElementById('btnHorario');
             var btnRetry = document.getElementById('btnRetry');
+            var searchInput = document.getElementById('searchInput');
             var currentUrl = JKURL;
             var bestProxy = 0;
             var isUserMexico = false;
@@ -714,6 +792,15 @@
 
             btnHorario.addEventListener('click', function () {
                 loadPage(JKURL + 'horario/');
+            });
+
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    var query = searchInput.value.trim();
+                    if (query) {
+                        loadPage(JKURL + 'buscar/' + encodeURIComponent(query) + '/1/');
+                    }
+                }
             });
 
             btnRetry.addEventListener('click', function () {
