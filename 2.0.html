@@ -413,7 +413,6 @@
 
 
             var BASE_CSS = [
-                'header,.navbar,nav.navbar,.top-bar,#header,.site-header,.main-header,.navigation,.nav-main{display:none!important}',
                 '.app-banner,.app-download,.app-promo,.download-app,.box_app,.box-app,[class*="app-banner"],[class*="app-download"],#app-banner{display:none!important}',
                 '.mobile-bottom-nav__item[href*="comunidad"],a[href*="comunidad"],.fullmenu.mobile-bottom-nav__item,.mobile-bottom-nav__item--mas{display:none!important}',
                 'li:has(>a[href*="comunidad"]){display:none!important}',
@@ -525,7 +524,6 @@
 
                 js +=
                     'function cleanup(){\n' +
-                    '  document.querySelectorAll("header,.navbar,nav.navbar,.top-bar,.site-header,.main-header,#header,.navigation,.nav-main").forEach(function(e){e.style.display="none"});\n' +
                     '  document.querySelectorAll("a").forEach(function(a){\n' +
                     '    var t=a.textContent.trim().toLowerCase();\n' +
                     '    if(t==="comunidad"||t==="más"||t==="mas"){(a.closest("li")||a.closest(".mobile-bottom-nav__item")||a).style.display="none"}\n' +
