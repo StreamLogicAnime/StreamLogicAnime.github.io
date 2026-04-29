@@ -487,8 +487,8 @@
                     '  return _origWinOpen.apply(this,arguments);\n' +
                     '};\n' +
                     'if(window.__adblock_mx) {\n' +
-                    '  var globalCssStr = ".modal_android, .modal_android_main, .modal_item, #modal, div[id^=\\"adangle\\"], img[id^=\\"adangle\\"], ins, .ad-container, .adsbygoogle, [id^=div-gpt-ad], [class*=\\"-ad-\\"], [class*=\\"_ad_\\"], iframe[src*=\\"ads\\"], iframe[src*=\\"ad.\\"], [id*=\\"ad-box\\"], [class*=\\"ad-box\\"], [id*=\\"banner-ad\\"], [class*=\\"banner-ad\\"], .ad, .ads, .advert, .advertising, a[href*=\\"pin-up\\"], a[href*=\\"caliente\\"], .bg_mask, .mask { display: none !important; pointer-events: none !important; opacity: 0 !important; }";\n' +
-                    '  var iframeCssStr = globalCssStr + " .bg_mask, .mask, div[data-onopen], .wrapper { display: none !important; pointer-events: none !important; opacity: 0 !important; }";\n' +
+                    '  var globalCssStr = "#modal, div[id^=\\"adangle\\"], img[id^=\\"adangle\\"], ins, .ad-container, .adsbygoogle, [id^=div-gpt-ad], [class*=\\"-ad-\\"], [class*=\\"_ad_\\"], iframe[src*=\\"ads\\"], iframe[src*=\\"ad.\\"], [id*=\\"ad-box\\"], [class*=\\"ad-box\\"], [id*=\\"banner-ad\\"], [class*=\\"banner-ad\\"], .ad, .ads, .advert, .advertising, a[href*=\\"pin-up\\"], a[href*=\\"caliente\\"] { display: none !important; pointer-events: none !important; opacity: 0 !important; }";\n' +
+                    '  var iframeCssStr = globalCssStr + " div[data-onopen], .wrapper { display: none !important; pointer-events: none !important; opacity: 0 !important; }";\n' +
                     '  var _st = document.createElement("style");\n' +
                     '  _st.textContent = globalCssStr;\n' +
                     '  if(document.head) document.head.appendChild(_st);\n' +
@@ -516,7 +516,12 @@
                     '            } catch(e) {}\n' +
                     '          });\n' +
                     '        }\n' +
-                    '        if (n.matches && n.matches(".modal_android, #modal, [id^=\\"adangle\\"], ins, .bg_mask, .mask")) { n.remove(); return; }\n' +
+                    '        if (n.matches && n.matches(".modal_android, .modal_android_main, .modal_item, .bg_mask, .mask")) {\n' +
+                    '          n.style.opacity = "0";\n' +
+                    '          setTimeout(function() { try{ n.click(); }catch(e){} n.remove(); }, 150);\n' +
+                    '          return;\n' +
+                    '        }\n' +
+                    '        if (n.matches && n.matches("#modal, [id^=\\"adangle\\"], ins")) { n.remove(); return; }\n' +
                     '        if ((n.tagName==="IFRAME" || n.tagName==="SCRIPT" || n.tagName==="IMG" || n.tagName==="SOURCE") && n.src){\n' +
                     '          if(isBlockedUrl(n.src, false)) {\n' +
                     '             n.removeAttribute("src"); n.remove();\n' +
@@ -526,7 +531,8 @@
                     '          n.removeAttribute("href"); n.remove();\n' +
                     '        }\n' +
                     '        if(n.querySelectorAll) {\n' +
-                    '          n.querySelectorAll(".modal_android, #modal, [id^=\\"adangle\\"], ins, .bg_mask, .mask").forEach(function(sub){ sub.remove(); });\n' +
+                    '          n.querySelectorAll(".modal_android, .modal_android_main, .modal_item, .bg_mask, .mask").forEach(function(sub){ sub.style.opacity="0"; setTimeout(function(){try{sub.click();}catch(e){} sub.remove();}, 150); });\n' +
+                    '          n.querySelectorAll("#modal, [id^=\\"adangle\\"], ins").forEach(function(sub){ sub.remove(); });\n' +
                     '          n.querySelectorAll("iframe, script, img, source").forEach(function(sub){\n' +
                     '            if(sub.src && isBlockedUrl(sub.src, false)) {\n' +
                     '              sub.removeAttribute("src"); sub.remove();\n' +
