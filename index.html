@@ -672,6 +672,188 @@
                     'if(document.body){new MutationObserver(function(){cleanup()}).observe(document.body,{childList:true,subtree:true})}\n';
 
                 js +=
+                    'function getAnimeBaseUrl(){\n' +
+                    '  var meta=document.querySelector("meta[property=\\"og:url\\"]");\n' +
+                    '  var url=meta&&meta.content?meta.content:"";\n' +
+                    '  if(!url){var all=document.querySelector(".anime_slug a[href], #uep[href], a[href*=\\"jkanime.net\\"]"); if(all) url=all.href;}\n' +
+                    '  try{\n' +
+                    '    var parsed=new URL(url,"' + JKBASE + '/");\n' +
+                    '    var parts=parsed.pathname.split("/").filter(Boolean);\n' +
+                    '    if(parts.length>1&&/^\\d+$/.test(parts[parts.length-1])) parts.pop();\n' +
+                    '    if(!parts.length) return "";\n' +
+                    '    parsed.pathname="/"+parts[0]+"/";\n' +
+                    '    parsed.search="";\n' +
+                    '    parsed.hash="";\n' +
+                    '    return parsed.href;\n' +
+                    '  }catch(er){return ""}\n' +
+                    '}\n' +
+                    'function getAnimeTitle(){\n' +
+                    '  var el=document.querySelector(".anime_info h3, .video-info h1, h1, h3");\n' +
+                    '  var title=el&&el.textContent?el.textContent.trim():document.title.replace(/\\s*-\\s*anime[\\s\\S]*$/i,"").trim();\n' +
+                    '  return title.replace(/\\s+\\d+$/,"")||"Episodio";\n' +
+                    '}\n' +
+                    'function getAnimePoster(){\n' +
+                    '  var img=document.querySelector(".anime_pic img, .movpic img");\n' +
+                    '  var meta=document.querySelector("meta[property=\\"og:image\\"]");\n' +
+                    '  return img&&img.src?img.src:(meta&&meta.content?meta.content:"");\n' +
+                    '}\n' +
+                    'function getEpisodeLimit(){\n' +
+                    '  var nums=[];\n' +
+                    '  var latest=document.querySelector("#uep[href]");\n' +
+                    '  if(latest){var latestMatch=latest.href.match(/\\/(\\d+)\\/?(?:[?#].*)?$/); if(latestMatch) nums.push(parseInt(latestMatch[1],10));}\n' +
+                    '  document.querySelectorAll(".anime_data li").forEach(function(li){var t=li.textContent||""; if(/episodios/i.test(t)){var m=t.match(/(\\d+)/); if(m) nums.push(parseInt(m[1],10));}});\n' +
+                    '  document.querySelectorAll("script").forEach(function(script){var m=(script.textContent||"").match(/paginationEps\\((\\d+)\\)/); if(m) nums.push(parseInt(m[1],10));});\n' +
+                    '  nums=nums.filter(function(n){return n>0&&!isNaN(n)}).sort(function(a,b){return b-a});\n' +
+                    '  return nums[0]||0;\n' +
+                    '}\n' +
+                    'function updateEpisodeCounters(){\n' +
+                    '  var total=getEpisodeLimit();\n' +
+                    '  if(!total) return;\n' +
+                    '  var label=total+" episodio"+(total===1?"":"s");\n' +
+                    '  document.querySelectorAll(".anime_data li").forEach(function(li){\n' +
+                    '    var marker=li.querySelector("span");\n' +
+                    '    if(marker&&/^\\s*episodios\\s*:/i.test(marker.textContent||"")){\n' +
+                    '      Array.prototype.slice.call(li.childNodes).forEach(function(node){if(node!==marker) li.removeChild(node);});\n' +
+                    '      li.appendChild(document.createTextNode(" "+total));\n' +
+                    '    }\n' +
+                    '  });\n' +
+                    '  document.querySelectorAll("span,p,small,div").forEach(function(el){\n' +
+                    '    if(el.children.length>0) return;\n' +
+                    '    var text=(el.textContent||"").trim();\n' +
+                    '    if(/^0\\s+episodios$/i.test(text)||/^episodios\\s*:\\s*0$/i.test(text)) el.textContent=/^episodios/i.test(text)?"Episodios: "+total:label;\n' +
+                    '  });\n' +
+                    '}\n' +
+                    'function getCurrentEpisodeNumber(){\n' +
+                    '  var meta=document.querySelector("meta[property=\\"og:url\\"]");\n' +
+                    '  var url=meta&&meta.content?meta.content:"";\n' +
+                    '  var m=url.match(/\\/(\\d+)\\/?(?:[?#].*)?$/);\n' +
+                    '  return m?parseInt(m[1],10):0;\n' +
+                    '}\n' +
+                    'function getEpisodeImage(){\n' +
+                    '  var poster=getAnimePoster();\n' +
+                    '  var meta=document.querySelector("meta[property=\\"og:image\\"]");\n' +
+                    '  return meta&&meta.content&&meta.content.indexOf("/video/")!==-1?meta.content:poster;\n' +
+                    '}\n' +
+                    'function createEpisodeNode(num, listMode){\n' +
+                    '  var base=getAnimeBaseUrl();\n' +
+                    '  var href=base.replace(/\\/$/,"")+"/"+num+"/";\n' +
+                    '  var title=getAnimeTitle();\n' +
+                    '  var poster=getEpisodeImage();\n' +
+                    '  if(listMode){\n' +
+                    '    var li=document.createElement("li");\n' +
+                    '    li.className="list-group-item "+(getCurrentEpisodeNumber()===num?"current":"");\n' +
+                    '    li.setAttribute("data-num", String(num));\n' +
+                    '    var link=document.createElement("a");\n' +
+                    '    link.href=href;\n' +
+                    '    if(poster){var thumb=document.createElement("div"); thumb.className="vt"; var image=document.createElement("img"); image.className="img-responsive img-rounded anime__item__pic"; image.src=poster; image.setAttribute("data-setbg", poster); thumb.appendChild(image); link.appendChild(thumb);}\n' +
+                    '    var heading=document.createElement("h5");\n' +
+                    '    heading.className="list-group-item-heading";\n' +
+                    '    heading.textContent="Episodio "+num;\n' +
+                    '    var subt=document.createElement("span");\n' +
+                    '    subt.className="subtl";\n' +
+                    '    subt.textContent=title;\n' +
+                    '    link.appendChild(heading);\n' +
+                    '    link.appendChild(subt);\n' +
+                    '    li.appendChild(link);\n' +
+                    '    return li;\n' +
+                    '  }\n' +
+                    '  var wrap=document.createElement("div");\n' +
+                    '  wrap.className="epcontent col-lg-3 col-md-4 col-sm-6 col-4";\n' +
+                    '  wrap.setAttribute("data-number", String(num));\n' +
+                    '  var item=document.createElement("div");\n' +
+                    '  item.className="anime__item";\n' +
+                    '  var linkGrid=document.createElement("a");\n' +
+                    '  linkGrid.href=href;\n' +
+                    '  var pic=document.createElement("div");\n' +
+                    '  pic.className="anime__item__pic homemini set-bg";\n' +
+                    '  if(poster){pic.setAttribute("data-setbg", poster); pic.style.backgroundImage="url(\\""+poster.replace(/"/g,"\\\\\\"")+"\\")";}\n' +
+                    '  var text=document.createElement("div");\n' +
+                    '  text.className="anime__item__text";\n' +
+                    '  var ul=document.createElement("ul");\n' +
+                    '  ul.className="cap_num";\n' +
+                    '  var liGrid=document.createElement("li");\n' +
+                    '  var span=document.createElement("span");\n' +
+                    '  span.textContent="Capitulo "+num;\n' +
+                    '  liGrid.appendChild(span);\n' +
+                    '  ul.appendChild(liGrid);\n' +
+                    '  text.appendChild(ul);\n' +
+                    '  pic.appendChild(text);\n' +
+                    '  linkGrid.appendChild(pic);\n' +
+                    '  item.appendChild(linkGrid);\n' +
+                    '  wrap.appendChild(item);\n' +
+                    '  return wrap;\n' +
+                    '}\n' +
+                    'function renderEpisodeRange(value){\n' +
+                    '  var content=document.getElementById("episodes-content");\n' +
+                    '  if(!content) return;\n' +
+                    '  var match=String(value||"").match(/#pag(\\d+)/);\n' +
+                    '  if(!match) return;\n' +
+                    '  var page=parseInt(match[1],10);\n' +
+                    '  var total=getEpisodeLimit();\n' +
+                    '  if(!total) return;\n' +
+                    '  var perPage=16;\n' +
+                    '  var start=(page-1)*perPage+1;\n' +
+                    '  var end=Math.min(start+perPage-1,total);\n' +
+                    '  var listMode=content.tagName==="UL"||content.classList.contains("list-group")||content.closest(".epc");\n' +
+                    '  content.innerHTML="";\n' +
+                    '  for(var n=start;n<=end;n++){content.appendChild(createEpisodeNode(n,listMode));}\n' +
+                    '  window.default_page=content.innerHTML;\n' +
+                    '}\n' +
+                    'function refreshNativeSelect(select){\n' +
+                    '  if(window.jQuery&&window.jQuery.fn&&window.jQuery.fn.niceSelect){try{window.jQuery(select).niceSelect("update");}catch(er){}}\n' +
+                    '  var nice=select.nextElementSibling;\n' +
+                    '  if(nice&&nice.classList&&nice.classList.contains("nice-select")){\n' +
+                    '    var current=select.options[select.selectedIndex];\n' +
+                    '    var currentText=nice.querySelector(".current");\n' +
+                    '    var list=nice.querySelector(".list");\n' +
+                    '    if(currentText&&current) currentText.textContent=current.textContent;\n' +
+                    '    if(list){list.innerHTML=""; Array.prototype.forEach.call(select.options,function(opt,i){var item=document.createElement("li"); item.className="option"+(opt.selected?" selected focus":""); item.setAttribute("data-value",opt.value); item.textContent=opt.textContent; item.addEventListener("click",function(){select.selectedIndex=i; select.dispatchEvent(new Event("change",{bubbles:true}));}); list.appendChild(item);});}\n' +
+                    '  }\n' +
+                    '}\n' +
+                    'function setupEpisodePagination(){\n' +
+                    '  var select=document.querySelector(".anime__pagination");\n' +
+                    '  updateEpisodeCounters();\n' +
+                    '  if(!select) return;\n' +
+                    '  var total=getEpisodeLimit();\n' +
+                    '  if(!total) return;\n' +
+                    '  var perPage=16;\n' +
+                    '  var pages=Math.ceil(total/perPage);\n' +
+                    '  var current=getCurrentEpisodeNumber();\n' +
+                    '  if(select.options.length!==pages){select.innerHTML=""; for(var i=1;i<=pages;i++){var start=(i-1)*perPage+1; var end=Math.min(start+perPage-1,total); var opt=document.createElement("option"); opt.value="#pag"+i; opt.textContent="Ep "+start+" - "+end; if(current>=start&&current<=end) opt.selected=true; select.appendChild(opt);}}\n' +
+                    '  if(!select.value&&select.options.length) select.selectedIndex=0;\n' +
+                    '  refreshNativeSelect(select);\n' +
+                    '}\n' +
+                    'function renderEpisodeSearch(value){\n' +
+                    '  var content=document.getElementById("episodes-content");\n' +
+                    '  if(!content) return;\n' +
+                    '  if(!content.hasAttribute("data-sl-default")) content.setAttribute("data-sl-default", content.innerHTML);\n' +
+                    '  var raw=String(value||"").trim();\n' +
+                    '  if(!raw){content.innerHTML=window.default_page||content.getAttribute("data-sl-default")||""; return;}\n' +
+                    '  if(!/^\\d+$/.test(raw)) return;\n' +
+                    '  var num=parseInt(raw,10);\n' +
+                    '  var limit=getEpisodeLimit();\n' +
+                    '  if(num<1||(limit&&num>limit)){content.innerHTML="<h3 style=\\"padding: 14px;\\">No se encontro.</h3>"; return;}\n' +
+                    '  var base=getAnimeBaseUrl();\n' +
+                    '  if(!base) return;\n' +
+                    '  var href=base.replace(/\\/$/,"")+"/"+num+"/";\n' +
+                    '  content.innerHTML="";\n' +
+                    '  if(content.tagName==="UL"||content.classList.contains("list-group")||content.closest(".epc")){\n' +
+                    '    content.appendChild(createEpisodeNode(num,true));\n' +
+                    '  }else{\n' +
+                    '    content.appendChild(createEpisodeNode(num,false));\n' +
+                    '  }\n' +
+                    '}\n' +
+                    'setTimeout(setupEpisodePagination,250);\n' +
+                    'setTimeout(setupEpisodePagination,900);\n' +
+                    'setTimeout(setupEpisodePagination,1800);\n' +
+                    'setTimeout(updateEpisodeCounters,2800);\n' +
+                    'if(document.body){new MutationObserver(function(){clearTimeout(window.__sl_ep_counter_timer);window.__sl_ep_counter_timer=setTimeout(updateEpisodeCounters,120);}).observe(document.body,{childList:true,subtree:true,characterData:true})}\n' +
+                    'document.addEventListener("input",function(e){if(e.target&&e.target.id==="qcap"){e.stopImmediatePropagation();renderEpisodeSearch(e.target.value);}},true);\n' +
+                    'document.addEventListener("change",function(e){if(e.target&&e.target.id==="qcap"){e.stopImmediatePropagation();renderEpisodeSearch(e.target.value);}},true);\n' +
+                    'document.addEventListener("change",function(e){if(e.target&&e.target.classList&&e.target.classList.contains("anime__pagination")){e.preventDefault();e.stopImmediatePropagation();setupEpisodePagination();renderEpisodeRange(e.target.value);}},true);\n' +
+                    'document.addEventListener("keydown",function(e){if(e.target&&e.target.id==="qcap"&&e.key==="Enter"){var base=getAnimeBaseUrl();var raw=String(e.target.value||"").trim();if(base&&/^\\d+$/.test(raw)){e.preventDefault();e.stopImmediatePropagation();window.parent.postMessage({type:"sl-nav",url:base.replace(/\\/$/,"")+"/"+parseInt(raw,10)+"/"},"*");}}},true);\n';
+
+                js +=
                     'document.addEventListener("click",function(e){\n' +
                     '  var a=e.target.closest("a");\n' +
                     '  if(!a)return;\n' +
