@@ -311,6 +311,9 @@
             padding: 6px 35px 6px 15px;
             color: #fff;
             font-size: 13px;
+            direction: ltr;
+            unicode-bidi: plaintext;
+            text-align: left;
             outline: none;
             transition: all 0.3s ease;
             box-sizing: border-box;
@@ -406,7 +409,7 @@
         </div>
         <div class="header-center">
             <div class="search-wrapper">
-                <input type="text" class="search-input" id="searchInput" placeholder="Buscar Anime...">
+                <input type="search" class="search-input" id="searchInput" placeholder="Buscar Anime..." dir="ltr" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
                 <div class="search-icon">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
@@ -806,8 +809,20 @@
                 loadPage(JKURL + 'horario/');
             });
 
-            searchInput.addEventListener('keypress', function(e) {
+            searchInput.addEventListener('focus', function () {
+                var end = searchInput.value.length;
+                searchInput.setSelectionRange(end, end);
+            });
+
+            searchInput.addEventListener('input', function (e) {
+                if (e.isComposing || !e.inputType || e.inputType.indexOf('insert') !== 0) return;
+                var end = searchInput.value.length;
+                searchInput.setSelectionRange(end, end);
+            });
+
+            searchInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
+                    e.preventDefault();
                     var query = searchInput.value.trim();
                     if (query) {
                         loadPage(JKURL + 'buscar/' + encodeURIComponent(query) + '/');
