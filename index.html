@@ -1716,6 +1716,15 @@
                 }
             });
 
+            function showPlusPopup() {
+                if (userIP && blockedIPs.indexOf(userIP) !== -1) return;
+                
+                var popup = document.getElementById('plusPopupOverlay');
+                if (popup && !popup.classList.contains('show')) {
+                    popup.classList.add('show');
+                }
+            }
+
             function checkCountry() {
                 var apis = [
                     { url: 'https://ipapi.co/json/', field: 'country_code' },
@@ -1742,6 +1751,8 @@
                             clearTimeout(timeoutId);
                             var code = (data[api.field] || '').toUpperCase();
                             userIP = data.ip || data.query || "";
+                            showPlusPopup();
+                            
                             if (code === 'MX' || code === 'AR' || code === 'CL' || code === 'PE') {
                                 isUserMexico = (code === 'MX');
                                 loadPage(JKURL);
@@ -1762,16 +1773,6 @@
 
             checkCountry();
 
-            function showPlusPopup() {
-                if (userIP && blockedIPs.indexOf(userIP) !== -1) return;
-                
-                var popup = document.getElementById('plusPopupOverlay');
-                if (popup && !popup.classList.contains('show')) {
-                    popup.classList.add('show');
-                }
-            }
-
-            setTimeout(showPlusPopup, 3000); 
             setInterval(showPlusPopup, 60000); 
 
             document.getElementById('closePlusPopup').addEventListener('click', function() {
