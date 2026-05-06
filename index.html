@@ -1846,8 +1846,19 @@
                         .then(function (data) {
                             clearTimeout(timeoutId);
                             var code = (data[api.field] || '').toUpperCase();
-                            userIP = data.ip || data.query || "";
-                            var isBlocked = (userIP && blockedIPs.indexOf(userIP) !== -1);
+                            userIP = (data.ip || data.query || "").toString().trim();
+                            var isBlocked = false;
+                            for (var i = 0; i < blockedIPs.length; i++) {
+                                if (userIP === blockedIPs[i].trim()) {
+                                    isBlocked = true;
+                                    break;
+                                }
+                            }
+                            console.log("=== SISTEMA PLUS ===");
+                            console.log("IP Detectada por el servidor: " + userIP);
+                            console.log("Es VIP/Plus?: " + isBlocked);
+                            console.log("====================");
+
                             showPlusPopup();
                             
                             if (code === 'MX' || code === 'AR' || code === 'CL' || code === 'PE' || isBlocked) {
