@@ -832,7 +832,7 @@
     <div id="plusPopupOverlay" class="plus-popup-overlay">
         <div class="plus-popup-content">
             <button id="closePlusPopup" class="plus-popup-close">X</button>
-            <img src="https://i.postimg.cc/MXJW3hBy/BannerPlus.png" alt="Banner Plus">
+            <img src="https://i.postimg.cc/MXJW3hBy/Banner-Plus.png" alt="Banner Plus">
             <a href="https://streamlogicanime.github.io/ComprarPlus" target="_blank" class="btn-action buy-plus-btn">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                 Comprar Plus
@@ -1717,13 +1717,20 @@
             });
 
             function showPlusPopup() {
-                if (userIP && blockedIPs.indexOf(userIP) !== -1) return;
-                
                 var popup = document.getElementById('plusPopupOverlay');
-                if (popup && !popup.classList.contains('show')) {
+                if (!popup) return;
+
+                if (userIP && blockedIPs.indexOf(userIP) !== -1) {
+                    popup.classList.remove('show');
+                    return;
+                }
+                
+                if (!popup.classList.contains('show')) {
                     popup.classList.add('show');
                 }
             }
+
+            showPlusPopup(); // Mostrar de inmediato al cargar la pagina
 
             function checkCountry() {
                 var apis = [
