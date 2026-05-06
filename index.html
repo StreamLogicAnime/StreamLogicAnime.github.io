@@ -952,7 +952,9 @@
             var bestProxy = 0;
             var isUserMexico = false;
             var userIP = "";
-            var blockedIPs = [];
+            var blockedIPs = [
+                "2806:10be:4:61b8:79a1:eb9a:841f:12cd"
+            ];
             var currentFrame = null;
             var detachedPlayer = null;
             var lastDetachedPayload = null;
@@ -1843,10 +1845,10 @@
                         .then(function (data) {
                             clearTimeout(timeoutId);
                             var code = (data[api.field] || '').toUpperCase();
-                            userIP = (data.ip || data.query || "").toString().trim();
+                            userIP = (data.ip || data.query || "").toString().trim().toLowerCase();
                             var isBlocked = false;
                             for (var i = 0; i < blockedIPs.length; i++) {
-                                if (userIP === blockedIPs[i].trim()) {
+                                if (userIP === blockedIPs[i].trim().toLowerCase()) {
                                     isBlocked = true;
                                     break;
                                 }
