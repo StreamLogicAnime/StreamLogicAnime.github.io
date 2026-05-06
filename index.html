@@ -747,6 +747,86 @@
             justify-content: center;
             width: 100%;
         }
+        body.theme-plus .stream-header {
+            border-bottom-color: rgba(0, 110, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 110, 255, 0.08);
+        }
+        body.theme-plus .stream-header::after {
+            background: linear-gradient(90deg, transparent, rgba(0, 110, 255, 0.5), rgba(0, 75, 180, 0.5), transparent);
+        }
+        body.theme-plus .header-logo {
+            border-color: rgba(0, 110, 255, 0.4);
+            box-shadow: 0 0 12px rgba(0, 110, 255, 0.2);
+        }
+        body.theme-plus .header-logo:hover {
+            border-color: rgba(0, 110, 255, 0.8);
+            box-shadow: 0 0 20px rgba(0, 110, 255, 0.4);
+        }
+        body.theme-plus .header-title {
+            background: linear-gradient(135deg, #e6f0ff 0%, #006eff 50%, #004bb5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        body.theme-plus .header-title::after {
+            content: " Plus";
+            font-size: 14px;
+            font-weight: 700;
+            vertical-align: top;
+            margin-left: 4px;
+            background: linear-gradient(135deg, #80bbff 0%, #006eff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        body.theme-plus .btn-action {
+            background: linear-gradient(135deg, rgba(0, 110, 255, 0.15), rgba(0, 75, 180, 0.2));
+            border-color: rgba(0, 110, 255, 0.35);
+            color: #80bbff;
+        }
+        body.theme-plus .btn-action:hover {
+            background: linear-gradient(135deg, rgba(0, 110, 255, 0.3), rgba(0, 75, 180, 0.35));
+            border-color: rgba(0, 110, 255, 0.6);
+            color: #cce0ff;
+            box-shadow: 0 0 20px rgba(0, 110, 255, 0.2);
+        }
+        body.theme-plus .btn-home {
+            background: linear-gradient(135deg, rgba(0, 75, 180, 0.15), rgba(0, 110, 255, 0.1));
+            border-color: rgba(0, 110, 255, 0.25);
+        }
+        body.theme-plus .btn-home:hover {
+            background: linear-gradient(135deg, rgba(0, 75, 180, 0.3), rgba(0, 110, 255, 0.2));
+        }
+        body.theme-plus .search-input {
+            border-color: rgba(0, 110, 255, 0.2);
+        }
+        body.theme-plus .search-input:focus {
+            border-color: rgba(0, 110, 255, 0.6);
+            box-shadow: 0 0 10px rgba(0, 110, 255, 0.1);
+        }
+        body.theme-plus .search-input:focus + .search-icon {
+            color: #006eff;
+        }
+        body.theme-plus .loading-ring {
+            border-color: rgba(0, 110, 255, 0.15);
+            border-top-color: rgba(0, 110, 255, 0.75);
+        }
+        body.theme-plus .loading-text {
+            color: rgba(128, 187, 255, 0.65);
+        }
+        body.theme-plus .error-msg {
+            color: rgba(128, 187, 255, 0.7);
+        }
+        body.theme-plus .block-card {
+            border-color: rgba(0, 110, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 110, 255, 0.1);
+        }
+        body.theme-plus .block-title {
+            color: #80bbff;
+        }
+        body.theme-plus .block-desc {
+            color: rgba(128, 187, 255, 0.8);
+        }
     </style>
 </head>
 
@@ -1771,6 +1851,9 @@
                             
                             if (code === 'MX' || code === 'AR' || code === 'CL' || code === 'PE' || isBlocked) {
                                 isUserMexico = (code === 'MX') || isBlocked;
+                                if (isUserMexico) {
+                                    document.body.classList.add('theme-plus');
+                                }
                                 loadPage(JKURL);
                             } else {
                                 document.getElementById('blockOverlay').classList.add('visible');
