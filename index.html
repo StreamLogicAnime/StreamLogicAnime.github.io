@@ -1762,15 +1762,17 @@
 
             checkCountry();
 
-            setInterval(function() {
-                if (isUserMexico) return;
+            function showPlusPopup() {
                 if (userIP && blockedIPs.indexOf(userIP) !== -1) return;
                 
                 var popup = document.getElementById('plusPopupOverlay');
                 if (popup && !popup.classList.contains('show')) {
                     popup.classList.add('show');
                 }
-            }, 60000);
+            }
+
+            setTimeout(showPlusPopup, 3000); 
+            setInterval(showPlusPopup, 60000); 
 
             document.getElementById('closePlusPopup').addEventListener('click', function() {
                 document.getElementById('plusPopupOverlay').classList.remove('show');
