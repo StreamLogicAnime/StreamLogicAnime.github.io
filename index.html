@@ -1102,6 +1102,19 @@
                 padding: 0 14px;
             }
 
+            body.mobile-menu-open::before {
+                content: '';
+                position: fixed;
+                left: 0;
+                right: 0;
+                top: 52px;
+                bottom: 0;
+                z-index: 9999;
+                background: rgba(0, 0, 0, 0.34);
+                backdrop-filter: blur(3px);
+                -webkit-backdrop-filter: blur(3px);
+            }
+
             .header-left {
                 min-width: 0;
             }
