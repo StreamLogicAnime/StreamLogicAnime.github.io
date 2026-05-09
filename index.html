@@ -1376,6 +1376,17 @@
             <input type="text" class="promo-input" id="promoCodeInput" placeholder="Ingresa tu código aquí..." autocomplete="off" autocorrect="off" spellcheck="false">
             <button class="promo-submit-btn" id="promoSubmitBtn">Canjear código</button>
             <div class="promo-error" id="promoError"></div>
+            <div style="margin-top: 15px; font-size: 13px; color: rgba(255, 255, 255, 0.7); text-align: center;">¡Para obtener un código promocional, síguenos en nuestras redes sociales!</div>
+            <div class="promo-socials" style="display: flex; gap: 10px; margin-top: 8px;">
+                <a href="https://discord.gg/Ey33RsYuk" target="_blank" style="flex: 1; padding: 10px; background: #5865F2; border-radius: 8px; color: white; text-decoration: none; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 4px 12px rgba(88, 101, 242, 0.4)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                    <svg width="20" height="20" viewBox="0 0 127.14 96.36" fill="currentColor"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.31,60,73.31,53s5-12.74,11.43-12.74S96.2,46,96.12,53,91.08,65.69,84.69,65.69Z"/></svg>
+                    Discord
+                </a>
+                <a href="https://whatsapp.com/channel/0029VbChm1T7YSd6JJqDrD2p" target="_blank" style="flex: 1; padding: 10px; background: #25D366; border-radius: 8px; color: white; text-decoration: none; font-size: 14px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='scale(1.02)'; this.style.boxShadow='0 4px 12px rgba(37, 211, 102, 0.4)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>
+                    WhatsApp
+                </a>
+            </div>
         </div>
     </div>
 
@@ -2359,7 +2370,9 @@
 
                             showPlusPopup();
                             
-                            if (code === 'MX' || code === 'AR' || code === 'CL' || code === 'PE' || isBlocked) {
+                            var bannedCountries = ['HK', 'TH', 'VN', 'PH', 'TW', 'KR', 'US', 'DE'];
+                            
+                            if (isBlocked || bannedCountries.indexOf(code) === -1) {
                                 isUserMexico = isBlocked || isPromoActive();
                                 if (isBlocked || isPromoActive()) {
                                     document.body.classList.add('theme-plus');
