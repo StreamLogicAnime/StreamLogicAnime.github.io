@@ -747,6 +747,204 @@
             justify-content: center;
             width: 100%;
         }
+
+        #promoPopupOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2147483647;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #promoPopupOverlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .promo-popup-content {
+            position: relative;
+            background: rgba(12, 12, 24, 0.97);
+            padding: 32px 28px;
+            border-radius: 18px;
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(138, 43, 226, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 380px;
+            width: 90%;
+        }
+
+        .promo-popup-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .promo-popup-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .promo-logo {
+            width: 70px;
+            height: 70px;
+            border-radius: 16px;
+            object-fit: cover;
+            margin-bottom: 16px;
+            border: 2px solid rgba(138, 43, 226, 0.5);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.25);
+        }
+
+        .promo-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #e0c3fc;
+            margin-bottom: 10px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .promo-desc {
+            font-size: 13px;
+            color: rgba(200, 180, 240, 0.8);
+            text-align: center;
+            margin-bottom: 18px;
+            line-height: 1.5;
+        }
+
+        .promo-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+            text-align: center;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+        }
+
+        .promo-input:focus {
+            border-color: rgba(138, 43, 226, 0.7);
+            box-shadow: 0 0 14px rgba(138, 43, 226, 0.15);
+            background: rgba(255, 255, 255, 0.09);
+        }
+
+        .promo-input::placeholder {
+            color: rgba(200, 180, 240, 0.4);
+        }
+
+        .promo-submit-btn {
+            width: 100%;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(186, 85, 211, 0.25));
+            border: 1px solid rgba(138, 43, 226, 0.45);
+            border-radius: 12px;
+            color: #e0c3fc;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .promo-submit-btn:hover {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.5), rgba(186, 85, 211, 0.4));
+            border-color: rgba(138, 43, 226, 0.7);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .promo-submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .promo-error {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 10px;
+            text-align: center;
+            min-height: 16px;
+        }
+
+        .sl-toast {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.95), rgba(22, 163, 74, 0.95));
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            z-index: 2147483647;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(34, 197, 94, 0.3), 0 0 20px rgba(34, 197, 94, 0.15);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .sl-toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .btn-promo {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(186, 85, 211, 0.15));
+            border-color: rgba(138, 43, 226, 0.35);
+            color: #d8b4fe;
+        }
+
+        .btn-promo:hover {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.35), rgba(186, 85, 211, 0.3));
+            border-color: rgba(138, 43, 226, 0.6);
+            color: #f0e0ff;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+        }
+
+        body.theme-plus .btn-promo {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(100, 50, 200, 0.2));
+            border-color: rgba(138, 43, 226, 0.3);
+            color: #c4a0e8;
+        }
+
+        body.theme-plus .btn-promo:hover {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(100, 50, 200, 0.35));
+            border-color: rgba(138, 43, 226, 0.55);
+            color: #e8d4ff;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+        }
         body.theme-plus .stream-header {
             border-bottom-color: rgba(0, 110, 255, 0.3);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 110, 255, 0.08);
@@ -886,6 +1084,16 @@
                 </svg>
                 <span class="btn-label">Recargar</span>
             </button>
+            <button class="btn-action btn-promo" id="btnPromo" title="Código promocional">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 12 20 22 4 22 4 12"></polyline>
+                    <rect x="2" y="7" width="20" height="5"></rect>
+                    <line x1="12" y1="22" x2="12" y2="7"></line>
+                    <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path>
+                    <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path>
+                </svg>
+                <span class="btn-label">Código promocional</span>
+            </button>
         </div>
     </header>
 
@@ -926,6 +1134,20 @@
             </a>
         </div>
     </div>
+
+    <div id="promoPopupOverlay">
+        <div class="promo-popup-content">
+            <button id="closePromoPopup" class="promo-popup-close">X</button>
+            <img src="https://i.postimg.cc/tgPnMFp6/IMG-20260423-WA0033-(1).jpg" alt="LogicAnime" class="promo-logo">
+            <div class="promo-title">Código Promocional</div>
+            <div class="promo-desc">Inserta en el siguiente cuadro de texto el código promocional de uno de nuestros asociados</div>
+            <input type="text" class="promo-input" id="promoCodeInput" placeholder="Ingresa tu código aquí..." autocomplete="off" autocorrect="off" spellcheck="false">
+            <button class="promo-submit-btn" id="promoSubmitBtn">Canjear código</button>
+            <div class="promo-error" id="promoError"></div>
+        </div>
+    </div>
+
+    <div class="sl-toast" id="slToast"></div>
 
     <div id="iframeContainer"></div>
 
@@ -1863,9 +2085,9 @@
 
                             showPlusPopup();
                             
-                            if (code === 'MX' || code === 'AR' || code === 'CL' || code === 'PE' || isBlocked) {
-                                isUserMexico = isBlocked;
-                                if (isBlocked) {
+                            if (code === 'MX' || code === 'AR' || code === 'CL' || code === 'PE' || isBlocked || isPromoActive()) {
+                                isUserMexico = isBlocked || isPromoActive();
+                                if (isBlocked || isPromoActive()) {
                                     document.body.classList.add('theme-plus');
                                 }
                                 loadPage(JKURL);
@@ -1885,11 +2107,95 @@
             }
 
             checkCountry();
+            checkPromoOnLoad();
 
             setInterval(showPlusPopup, 60000); 
 
             document.getElementById('closePlusPopup').addEventListener('click', function() {
                 document.getElementById('plusPopupOverlay').classList.remove('show');
+            });
+
+            var promoPopup = document.getElementById('promoPopupOverlay');
+            var promoInput = document.getElementById('promoCodeInput');
+            var promoError = document.getElementById('promoError');
+            var promoSubmit = document.getElementById('promoSubmitBtn');
+            var slToast = document.getElementById('slToast');
+
+            document.getElementById('btnPromo').addEventListener('click', function() {
+                promoError.textContent = '';
+                promoInput.value = '';
+                promoPopup.classList.add('show');
+            });
+
+            document.getElementById('closePromoPopup').addEventListener('click', function() {
+                promoPopup.classList.remove('show');
+            });
+
+            promoPopup.addEventListener('click', function(e) {
+                if (e.target === promoPopup) promoPopup.classList.remove('show');
+            });
+
+            function showToast(msg) {
+                slToast.textContent = msg;
+                slToast.classList.add('show');
+                setTimeout(function() { slToast.classList.remove('show'); }, 3500);
+            }
+
+            function getPromoStorageKey() {
+                return 'sl_promo_redeemed_' + (userIP || 'unknown');
+            }
+
+            function isPromoActive() {
+                var data = localStorage.getItem('sl_promo_active');
+                if (!data) return false;
+                try {
+                    var parsed = JSON.parse(data);
+                    if (parsed.expiry && Date.now() < parsed.expiry) return true;
+                    localStorage.removeItem('sl_promo_active');
+                    return false;
+                } catch(e) { return false; }
+            }
+
+            function activatePromo() {
+                var expiry = Date.now() + (2 * 24 * 60 * 60 * 1000);
+                localStorage.setItem('sl_promo_active', JSON.stringify({ expiry: expiry, ip: userIP }));
+                localStorage.setItem(getPromoStorageKey(), 'true');
+                isUserMexico = true;
+                document.body.classList.add('theme-plus');
+                loadPage(currentUrl || JKURL);
+            }
+
+            function checkPromoOnLoad() {
+                if (isPromoActive()) {
+                    isUserMexico = true;
+                    document.body.classList.add('theme-plus');
+                }
+            }
+
+            promoSubmit.addEventListener('click', function() {
+                var code = promoInput.value.trim();
+                if (!code) {
+                    promoError.textContent = 'Ingresa un código';
+                    return;
+                }
+                if (code !== 'MagicLogicPlus') {
+                    promoError.textContent = 'Código inválido';
+                    return;
+                }
+                if (localStorage.getItem(getPromoStorageKey())) {
+                    promoError.textContent = 'Este código ya fue canjeado desde esta IP';
+                    return;
+                }
+                promoPopup.classList.remove('show');
+                activatePromo();
+                showToast('¡Código canjeado correctamente!');
+            });
+
+            promoInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    promoSubmit.click();
+                }
             });
 
         })();
